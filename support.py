@@ -78,8 +78,9 @@ def replay(client, conversations: list, build, send) -> list[Turn]:
             now = message["at"]
         else:
             # Live: the wall clock, as Friday's deploy used. Replaying the traffic's
-            # times would send the same prompts on every run, and one run would
-            # read what the last one wrote.
+            # times would repeat Friday's prompts from run to run, so a second run
+            # would read what the first one wrote. (The fix's handbook entry is the
+            # same bytes on every run, so a run within 5 minutes of another reads it.)
             now = datetime.now().astimezone().isoformat(timespec="seconds")
         request = build(history[c], message["text"], now)
         response, reason = send(client, request, previous_id[c])

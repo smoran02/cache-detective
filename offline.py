@@ -29,18 +29,21 @@ https://platform.claude.com/docs/en/build-with-claude/prompt-caching
 - Replaying an Opus 5.5 thinking block after anything before it changed is a 400.
 
 It also rejects, with the 400 the API would return, requests the lab could
-build by mistake: no messages, a text block whose text isn't a string, and a
-{"role": "system"} message that doesn't directly follow a user message or
-isn't followed by an assistant message (or the end).
+build by mistake: no messages, a system prompt or message content that isn't
+a string or a list of blocks, a text block whose text isn't a string, and a
+{"role": "system"} message (or a run of them) that doesn't directly follow a
+user message or isn't followed by an assistant message (or the end).
 https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
 
 What it doesn't do: count tokens like the real tokenizer (it uses about 4
 characters per token, so every count here is simulated), call tools, write
-real replies, or model concurrent requests. Replies are canned text. When
-the last block is a breakpoint, input_tokens here is 0; the real API can
-report a few uncached tokens even then (the docs' diagnostics example shows 42).
+real replies, or model concurrent requests. Replies are canned text, and
+their lengths vary with the request. When the last block is a breakpoint,
+input_tokens here is 0, as the docs' definition (tokens after the last
+breakpoint) implies.
 
-tests/test_simulator.py checks each rule above, one test per rule.
+tests/test_simulator.py has a test for each rule above and for each
+Unconfirmed reading below.
 """
 import hashlib
 import itertools
@@ -59,14 +62,19 @@ LOOKBACK_POSITIONS = 20
 MAX_BREAKPOINTS = 4
 
 # Unconfirmed: whether a breakpoint inside the prefix a request reads counts
-# as a use that refreshes its own entry. The docs say each use refreshes an
-# entry ("a cache hit (and also a cache refresh!)"), and their mixed-TTL
-# billing names A as "the highest cache hit", which implies one request can
-# hit at more than one breakpoint. The sim reads it that way. The lab's
-# numbers rest on it: set this to False and the fix gets 84.4% and $0.0197,
-# Thursday 84.3% and $0.0199, so Friday is 2.7x Thursday instead of 3.1x, and
-# the reference fails 3 offline tests (README, "Where the docs are silent").
+# as a use that refreshes its own entry. The docs' multi-turn example says
+# earlier-marked blocks read again are "a cache hit (and also a cache
+# refresh!)", and their mixed-TTL billing names A as "the highest cache hit",
+# which implies one request can hit at more than one breakpoint. The sim
+# reads it that way. The lab's numbers rest on it: set this to False and the
+# fix gets 84.4% and $0.0197, Thursday 84.3% and $0.0199, so Friday is 2.7x
+# Thursday instead of 3.1x, and the reference fails 3 offline tests (README,
+# "How offline mode works").
 REFRESH_BREAKPOINTS_INSIDE_THE_READ = True
+
+# Offline only: the likeliest way the lab hits the breakpoint limit.
+PILE_UP = ("(a cache_control on a user message stays in the history, so markers add up turn by turn: "
+           "mark a block every request shares instead)")
 
 REPLIES = [
     "Thanks for reaching out. I've pulled up the details, and here is where things stand: "
@@ -115,7 +123,18 @@ def _plain(block) -> dict:
     """A block as a plain dict, whether it arrived as a dict or an SDK object."""
     if hasattr(block, "model_dump"):
         return block.model_dump(exclude_none=True)
+    if not isinstance(block, dict):
+        raise SimulatedAPIError(f"(offline) a content block must be an object, not {type(block).__name__}")
     return dict(block)
+
+
+def _as_blocks(content, what: str) -> list:
+    """A string becomes one text block; a list is taken as is; anything else is a 400."""
+    if isinstance(content, str):
+        return [{"type": "text", "text": content}] if content else []
+    if not isinstance(content, list):
+        raise SimulatedAPIError(f"(offline) {what} must be a string or a list of blocks, not {type(content).__name__}")
+    return content
 
 
 @dataclass
@@ -133,18 +152,26 @@ def _check_messages(messages):
     """Reject message lists the API would reject with a 400."""
     if not messages:
         raise SimulatedAPIError("(offline) messages: at least one message is required")
-    for i, message in enumerate(messages):
-        if message["role"] != "system":
+    i = 0
+    while i < len(messages):
+        if messages[i]["role"] != "system":
+            i += 1
             continue
         # A mid-conversation system message must directly follow a user turn and
-        # precede an assistant turn or end the array. (The docs also allow one after
-        # an assistant turn that ends in a server tool result; the sim has no server tools.)
+        # precede an assistant turn or end the array. Consecutive system messages
+        # count as one system section, placed as a whole. (The docs also allow one
+        # after an assistant turn that ends in a server tool result; the sim has no
+        # server tools.)
         # https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
+        end = i
+        while end + 1 < len(messages) and messages[end + 1]["role"] == "system":
+            end += 1
         after_user = i > 0 and messages[i - 1]["role"] == "user"
-        before_assistant = i == len(messages) - 1 or messages[i + 1]["role"] == "assistant"
+        before_assistant = end == len(messages) - 1 or messages[end + 1]["role"] == "assistant"
         if not (after_user and before_assistant):
             raise SimulatedAPIError("(offline) a system message must directly follow a user message and come "
                                     "before an assistant message or end the messages")
+        i = end + 1
 
 
 def _flatten(tools, system, messages) -> list[_Block]:
@@ -154,9 +181,7 @@ def _flatten(tools, system, messages) -> list[_Block]:
         cc = tool.pop("cache_control", None)
         key = _canon(tool)
         blocks.append(_Block("tools", "tool", key, count_tokens(key), cc, None))
-    if isinstance(system, str):
-        system = [{"type": "text", "text": system}] if system else []
-    for b in system or []:
+    for b in _as_blocks(system, "system") if system is not None else []:
         b = _plain(b)
         cc = b.pop("cache_control", None)
         blocks.append(_Block("system", b.get("type", "text"), _canon(b), _tokens(b), cc, None))
@@ -164,7 +189,7 @@ def _flatten(tools, system, messages) -> list[_Block]:
         content = message["content"]
         if isinstance(content, str):
             content = [{"type": "text", "text": content}]
-        for j, b in enumerate(content):
+        for j, b in enumerate(_as_blocks(content, "message content")):
             b = _plain(b)
             cc = b.pop("cache_control", None)
             key = _canon([i, message["role"], j, b])
@@ -215,14 +240,14 @@ def _ttl(cache_control: dict) -> str:
 def _breakpoints(blocks: list[_Block], automatic: dict | None) -> list[tuple[int, str]]:
     bps = {i: _ttl(b.cache_control) for i, b in enumerate(blocks) if b.cache_control}
     if len(bps) > MAX_BREAKPOINTS:
-        raise SimulatedAPIError("(offline) at most 4 cache_control breakpoints per request")
+        raise SimulatedAPIError(f"(offline) at most 4 cache_control breakpoints per request {PILE_UP}")
     if automatic:
         # Unconfirmed: the docs list two edge cases that overlap when the 4th explicit
         # breakpoint is on the last block with the same TTL: automatic caching "is a
         # no-op" there, and "if 4 explicit block-level breakpoints already exist, the
         # API returns a 400 error". The sim checks the count first, so that's a 400.
         if len(bps) == MAX_BREAKPOINTS:
-            raise SimulatedAPIError("(offline) 4 explicit breakpoints leave no slot for automatic caching")
+            raise SimulatedAPIError(f"(offline) 4 explicit breakpoints leave no slot for automatic caching {PILE_UP}")
         # The automatic breakpoint goes on the last cacheable block. Thinking
         # blocks and empty text blocks can't be cached, so walk back past them.
         # (Unconfirmed: the docs don't list which blocks are ineligible for the
@@ -379,16 +404,21 @@ class _Engine:
         last = messages[-1]["content"] if messages else ""
         seed = int(_sha(_canon(last)), 16)
         text = REPLIES[seed % len(REPLIES)]
-        # Adaptive thinking is always on for Opus 5.5. Its tokens bill as output,
-        # and the block's text is empty at the default display ("omitted").
-        thinking_tokens = 40 + seed % 240
+        # Adaptive thinking is always on for Opus 5.5. Its tokens bill as output
+        # and count toward max_tokens, and the block's text is empty at the
+        # default display ("omitted").
+        # https://platform.claude.com/docs/en/build-with-claude/thinking
+        thinking_tokens = min(40 + seed % 240, max_tokens)
+        room, stop = max_tokens - thinking_tokens, "end_turn"
+        if count_tokens(text) > room:
+            text, stop = text[: 4 * room], "max_tokens"
         signature = f"offline-sig-{self.count:05d}"
         self.thinking[signature] = prefix_hash
         content = [
             {"type": "thinking", "thinking": "", "signature": signature},
             {"type": "text", "text": text},
         ]
-        return content, thinking_tokens + count_tokens(text), "end_turn"
+        return content, thinking_tokens + count_tokens(text), stop
 
     def _check_thinking_binding(self, model, blocks, content_hashes):
         """Replaying an Opus 5.5 thinking block after anything before it changed is a 400.

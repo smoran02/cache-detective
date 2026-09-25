@@ -1,17 +1,21 @@
 """
 Checks the offline client against the documented caching rules, one rule per
 test, each with its doc link, and the readings offline.py marks Unconfirmed.
-Everything else in the lab rests on these. The last test is the story's
-check: Friday's deploy tripled the bill. They pass whatever is in starter.py.
+Everything else in the lab rests on these. The last two tests check
+divergence.py against the client's diagnostics, and the story: Friday's
+deploy tripled the bill. They pass whatever is in starter.py.
 
     .venv/bin/python -m pytest -q tests/test_simulator.py
 """
 import pytest
 
 import config
+import offline
+# thursday_request lives in app.py, not support.py: clue 3's hint sends learners to support.py.
 from app import thursday_request
+from divergence import first_divergence, fingerprint
 from offline import OfflineClient, SimulatedAPIError
-from support import WEEKEND, friday_request, replay, send_plain
+from support import HANDBOOK, WEEKEND, friday_request, make_request, replay, send_plain
 from truth import truth
 
 BP = {"type": "ephemeral"}
@@ -30,7 +34,7 @@ def block(tokens: int, tag: str = "s", cache_control: dict | None = None) -> dic
 
 def ask(client, at: float, system, content="hello", **extra):
     client.set_clock(at)
-    return client.messages.create(model=config.MODEL, max_tokens=100, system=system,
+    return client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=system,
                                   messages=[{"role": "user", "content": content}], **extra)
 
 
@@ -56,6 +60,26 @@ def test_the_lookback_reaches_20_blocks_counting_the_breakpoint(blocks_after, re
     assert (response.usage.cache_read_input_tokens == 1000) is reads
 
 
+def test_each_breakpoint_has_its_own_lookback_window():
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#how-automatic-prefix-checking-works
+    client = OfflineClient()
+    ask(client, 0, [block(1000, cache_control=BP)])  # writes the prefix that ends at the system block
+    content = [block(10, str(i)) for i in range(25)]
+    content[-1]["cache_control"] = BP
+    # The last breakpoint's 20 positions stop short of the system block; the system breakpoint's own window finds it.
+    assert ask(client, 1, [block(1000, cache_control=BP)], content).usage.cache_read_input_tokens == 1000
+
+
+def test_a_tool_change_invalidates_the_system_and_messages_caches_too():
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#what-invalidates-the-cache
+    client = OfflineClient()
+    system = [block(1000, cache_control=BP)]
+    ask(client, 0, system, tools=[TOOL])
+    assert ask(client, 1, system, tools=[TOOL]).usage.cache_read_input_tokens > 1000  # tools and system
+    changed = {**TOOL, "description": "Find an order."}
+    assert ask(client, 2, system, tools=[changed]).usage.cache_read_input_tokens == 0
+
+
 def test_a_prefix_under_512_tokens_runs_uncached_with_no_error():
     # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#cache-limitations
     assert config.MIN_CACHEABLE_TOKENS == 512
@@ -72,6 +96,16 @@ def test_1h_entries_must_come_before_5m_entries():
         ask(OfflineClient(), 0, [block(600, "a", BP), block(600, "b", BP_1H)])
 
 
+def test_mixed_ttls_bill_reads_to_a_then_1h_writes_to_b_then_5m_writes_to_c():
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#mixing-different-ttls
+    client = OfflineClient()
+    ask(client, 0, [block(600, "a", BP)])  # writes the prefix that ends at block a
+    u = ask(client, 1, [block(600, "a", BP_1H), block(700, "b", BP_1H), block(800, "c", BP)]).usage
+    # A = 600 (the highest hit), B = 1,300 (the highest 1h breakpoint), C = 2,100 (the last breakpoint).
+    assert u.cache_read_input_tokens == 600
+    assert (u.cache_creation.ephemeral_1h_input_tokens, u.cache_creation.ephemeral_5m_input_tokens) == (700, 800)
+
+
 def test_at_most_4_breakpoints_and_automatic_caching_takes_one():
     # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#combining-with-block-level-caching
     four = [block(10, str(i), BP) for i in range(4)]
@@ -80,6 +114,10 @@ def test_at_most_4_breakpoints_and_automatic_caching_takes_one():
         ask(OfflineClient(), 0, four + [block(10, "4", BP)])
     with pytest.raises(SimulatedAPIError):
         ask(OfflineClient(), 0, four, cache_control=BP)
+    # Unconfirmed reading (offline.py, _breakpoints): with the 4th explicit breakpoint on the last
+    # block, the docs call automatic caching a no-op there and also say 4 explicit is a 400. The sim 400s.
+    with pytest.raises(SimulatedAPIError):
+        ask(OfflineClient(), 0, four[:3], [block(10, "m", BP)], cache_control=BP)
 
 
 def test_an_entry_lives_5_minutes_from_its_last_use():
@@ -92,11 +130,30 @@ def test_an_entry_lives_5_minutes_from_its_last_use():
     assert ask(client, 899, system).usage.cache_read_input_tokens == 0  # 5:01 after the last use
 
 
+@pytest.mark.parametrize("refresh, reads", [(True, 1000), (False, 0)], ids=["the sim's reading", "the other reading"])
+def test_a_breakpoint_inside_the_read_refreshes_its_entry(monkeypatch, refresh, reads):
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#mixing-different-ttls
+    # Unconfirmed reading (offline.py, REFRESH_BREAKPOINTS_INSIDE_THE_READ); the lab's numbers rest on it.
+    assert offline.REFRESH_BREAKPOINTS_INSIDE_THE_READ is True, "the README's numbers assume this reading"
+    monkeypatch.setattr(offline, "REFRESH_BREAKPOINTS_INSIDE_THE_READ", refresh)
+    client = OfflineClient()
+    system = [block(1000, cache_control=BP)]
+    ask(client, 0, system, cache_control=BP)  # writes at the system block and at "hello"
+    later = [{"role": "user", "content": "hello"}, {"role": "assistant", "content": "hi"},
+             {"role": "user", "content": "and?"}]
+    client.set_clock(200)
+    follow_up = client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=system,
+                                       messages=later, cache_control=BP)
+    assert follow_up.usage.cache_read_input_tokens == 1002  # reads through "hello", past the system breakpoint
+    # 450 seconds after the write, only the system entry could match. It's alive only if the follow-up refreshed it.
+    assert ask(client, 450, system, "something else", cache_control=BP).usage.cache_read_input_tokens == reads
+
+
 def test_diagnostics_compares_only_with_requests_that_sent_it():
     # https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#basic-usage
     # https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#cache-miss-reason-types
     client = OfflineClient()
-    request = dict(model=config.MODEL, max_tokens=100, cache_control=BP, system=block(1000)["text"],
+    request = dict(model=config.MODEL, max_tokens=config.MAX_TOKENS, cache_control=BP, system=block(1000)["text"],
                    messages=[{"role": "user", "content": "hello"}])
     first = client.beta.messages.create(**request, diagnostics={"previous_message_id": None})
     assert first.diagnostics is None  # a first turn: nothing to compare
@@ -105,6 +162,8 @@ def test_diagnostics_compares_only_with_requests_that_sent_it():
     changed = client.beta.messages.create(**{**request, "system": block(1000, "t")["text"]},
                                           diagnostics={"previous_message_id": same.id})
     assert changed.diagnostics.cache_miss_reason.type == "system_changed"
+    # Unconfirmed reading (offline.py, _diagnose): missed tokens are counted per block from the change on.
+    assert changed.diagnostics.cache_miss_reason.cache_missed_input_tokens == 1000 + 2  # the system prompt and "hello"
     unmarked = client.beta.messages.create(**request)  # no diagnostics object: no fingerprint kept
     after = client.beta.messages.create(**request, diagnostics={"previous_message_id": unmarked.id})
     assert after.diagnostics.cache_miss_reason.type == "previous_message_not_found"
@@ -127,13 +186,24 @@ def test_automatic_and_explicit_breakpoints_on_one_block_must_agree_on_ttl():
         ask(OfflineClient(), 0, [block(1000)], [block(10, "m", BP)], cache_control=BP_1H)
 
 
+def test_the_automatic_breakpoint_walks_back_past_a_thinking_block():
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#edge-cases
+    # Unconfirmed reading (offline.py, _breakpoints): thinking blocks can't be cached, so the sim skips them.
+    response = OfflineClient().messages.create(
+        model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)], cache_control=BP, messages=[
+            {"role": "user", "content": "hello"},
+            {"role": "assistant", "content": [{"type": "thinking", "thinking": "", "signature": "sig"}]},
+        ])
+    assert response.usage.cache_creation_input_tokens == 1000 + 2  # through "hello", not the thinking block
+
+
 def test_the_cache_is_per_model():
     # https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#cache-miss-reason-types
     client = OfflineClient()
     system = [block(1000, cache_control=BP)]
     ask(client, 0, system)
     client.set_clock(1)
-    other = client.messages.create(model="another-model", max_tokens=100, system=system,
+    other = client.messages.create(model="another-model", max_tokens=config.MAX_TOKENS, system=system,
                                    messages=[{"role": "user", "content": "hello"}])
     assert other.usage.cache_read_input_tokens == 0
 
@@ -159,7 +229,7 @@ def test_a_run_of_tool_use_blocks_is_one_lookback_position():
     results[-1]["cache_control"] = BP
     client.set_clock(1)
     # 52 blocks after the system prompt, but 3 lookback positions: the question, the calls, the results.
-    response = client.messages.create(model=config.MODEL, max_tokens=100, system=[block(1000)], messages=[
+    response = client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)], messages=[
         {"role": "user", "content": "Where are my orders?"},
         {"role": "assistant", "content": calls},
         {"role": "user", "content": results},
@@ -174,20 +244,21 @@ def test_a_thinking_block_replayed_after_the_system_prompt_changed_is_a_400():
     first = ask(client, 0, [block(1000)], question["content"])
     assert first.content[0].type == "thinking"
     history = [question, {"role": "assistant", "content": first.content}, {"role": "user", "content": "and?"}]
-    client.messages.create(model=config.MODEL, max_tokens=100, system=[block(1000)], messages=history)
+    client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)], messages=history)
     with pytest.raises(SimulatedAPIError):
-        client.messages.create(model=config.MODEL, max_tokens=100, system=[block(1000, "t")], messages=history)
+        client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000, "t")],
+                               messages=history)
 
 
 def diagnose(client, previous_id, **request):
-    base = dict(model=config.MODEL, max_tokens=100, system=block(1000)["text"],
+    base = dict(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=block(1000)["text"],
                 messages=[{"role": "user", "content": "hello"}])
     return client.beta.messages.create(**{**base, **request}, diagnostics={"previous_message_id": previous_id})
 
 
 def test_diagnostics_reports_the_earliest_divergence_in_prefix_order():
     # https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#cache-miss-reason-types
-    # Unconfirmed 13: the docs give no order for model, tools, and system. The sim
+    # Unconfirmed reading (offline.py, _diagnose): the docs give no order for model, tools, and system. The sim
     # checks the model, then follows the prefix: tools, system, messages.
     client = OfflineClient()
     first = diagnose(client, None, tools=[TOOL])
@@ -207,18 +278,65 @@ def test_diagnostics_is_unavailable_when_only_request_parameters_changed():
     [],  # no messages
     [{"role": "user", "content": [{"type": "text", "text": ["not", "a", "string"]}]}],
     [{"role": "system", "content": "Current time: 09:00"}, {"role": "user", "content": "hello"}],
-], ids=["no messages", "text that isn't a string", "system message before the user message"])
+    [{"role": "user", "content": "hello"}, {"role": "system", "content": "Current time: 09:00"},
+     {"role": "user", "content": "and?"}],
+    [{"role": "user", "content": {"type": "text", "text": "hello"}}],
+], ids=["no messages", "text that isn't a string", "system message before the user message",
+        "system message followed by a user message", "content that's one block, not a list"])
 def test_requests_the_api_rejects_are_400s(messages):
     # https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
     with pytest.raises(SimulatedAPIError):
-        OfflineClient().messages.create(model=config.MODEL, max_tokens=100, system=[block(1000)], messages=messages)
+        OfflineClient().messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)],
+                                        messages=messages)
 
 
-def test_a_system_message_can_follow_the_user_message():
+@pytest.mark.parametrize("system", [{"type": "text", "text": "hello"}, 42], ids=["one block, not a list", "a number"])
+def test_a_system_prompt_that_isnt_a_string_or_a_list_is_a_400(system):
+    with pytest.raises(SimulatedAPIError):
+        ask(OfflineClient(), 0, system)
+
+
+def test_system_messages_can_follow_the_user_message():
     # https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
-    response = OfflineClient().messages.create(model=config.MODEL, max_tokens=100, system=[block(1000)], messages=[
-        {"role": "user", "content": "hello"}, {"role": "system", "content": "Current time: 09:00"}])
-    assert response.stop_reason == "end_turn"
+    # "Consecutive system messages are accepted and treated as a single system section."
+    time = {"role": "system", "content": "Current time: 09:00"}
+    for after in ([time], [time, {"role": "system", "content": "The phone line is closed."}]):
+        response = OfflineClient().messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)],
+                                                   messages=[{"role": "user", "content": "hello"}, *after])
+        assert response.stop_reason == "end_turn"
+
+
+def test_output_stops_at_max_tokens():
+    # https://platform.claude.com/docs/en/build-with-claude/thinking (thinking counts toward max_tokens)
+    client = OfflineClient()
+    client.set_clock(0)
+    response = client.messages.create(model=config.MODEL, max_tokens=50, system=[block(1000)],
+                                      messages=[{"role": "user", "content": "hello"}])
+    assert (response.usage.output_tokens, response.stop_reason) == (50, "max_tokens")
+
+
+def test_first_divergence_agrees_with_diagnostics():
+    # divergence.py, the finder README "Take it to your app" offers for Bedrock, names the part
+    # diagnostics names: the system prompt on Friday's code, nothing once the time moves.
+    history = [{"role": "user", "content": "Do you rent bear canisters?"}, {"role": "assistant", "content": "Yes."}]
+    turn_1 = friday_request([], history[0]["content"], "2026-09-26T09:00:00-07:00")
+    turn_2 = friday_request(history, "How much for five days?", "2026-09-26T09:02:00-07:00")
+    assert first_divergence(turn_1, turn_2) == "system"
+    fixed_1 = thursday_request([], history[0]["content"], "")
+    fixed_2 = thursday_request(history, "How much for five days?", "")
+    assert first_divergence(fixed_1, fixed_2) is None
+    assert first_divergence(fingerprint(fixed_2), fingerprint(fixed_1)) == "messages[1]"  # history shrank
+    # A moved breakpoint isn't a change; a reordered tool list is.
+    marked = make_request(HANDBOOK, [{"role": "user", "content": [{"type": "text", "text": "hi", "cache_control": BP}]}])
+    unmarked = make_request(HANDBOOK, [{"role": "user", "content": [{"type": "text", "text": "hi"}]}])
+    assert first_divergence(marked, unmarked) is None
+    other = {**TOOL, "name": "track_order"}
+    assert first_divergence({**fixed_1, "tools": [TOOL, other]}, {**fixed_1, "tools": [other, TOOL]}) == "tools"
+    # And diagnostics agrees on Friday's pair.
+    client = OfflineClient()
+    first = client.beta.messages.create(**turn_1, diagnostics={"previous_message_id": None})
+    second = client.beta.messages.create(**turn_2, diagnostics={"previous_message_id": first.id})
+    assert second.diagnostics.cache_miss_reason.type == "system_changed"
 
 
 def test_fridays_deploy_tripled_the_bill():

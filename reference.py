@@ -16,7 +16,9 @@ def meter(usages: list, prices: dict | None = None) -> tuple[float, float]:
         w = u.cache_creation_input_tokens or 0
         # usage.cache_creation splits writes by TTL. 1h writes cost more (Keep going: TTL).
         w_1h = u.cache_creation.ephemeral_1h_input_tokens if u.cache_creation else 0
-        read, written, uncached = read + r, written + w, uncached + u.input_tokens
+        read += r
+        written += w
+        uncached += u.input_tokens
         dollars += (
             u.input_tokens * prices["input"]
             + (w - w_1h) * prices["cache_write_5m"]

@@ -45,28 +45,29 @@ def send_with_diagnostics(client, request: dict, previous_id: str | None):
 
 
 # ── Clue 3. Move the cache buster ─────────────────────────────────────────
-# Build one turn's request so the system prompt is byte-identical on every
-# request: just HANDBOOK. Wren still needs the time, so put `now` in the new
-# user message. Any wording works, as long as `now` is in it. Earlier
-# messages never change, so each turn can still read the prefix the turn
-# before it wrote.
-# history is the conversation so far: don't change it. Send it as it is,
-# then the new message (history + [message] makes a new list).
+# Build one turn's request (question is the customer's new message). It must:
+#   - send a system prompt that's the same bytes on every request, with the
+#     handbook in it;
+#   - still show Wren the time, date included (Friday's deploy added it so
+#     Wren stops offering phone callbacks when the line is closed), worded
+#     any way you like;
+#   - send history as it is, then the customer's new message. Don't change
+#     history: history + [message] makes a new list.
+# Where the time goes is the clue. Stuck? README, "Explain clue 3".
 # Hint: compare with friday_request() in support.py. make_request(system, messages) fills in the rest.
 def build_request(history: list, question: str, now: str) -> dict:
-    raise NotImplementedError("Clue 3: return make_request(HANDBOOK, ...) with `now` in the new user message")
+    raise NotImplementedError("Clue 3: keep the system prompt the same on every request, and still show Wren the time")
 
 
 # ── Clue 4. Place the breakpoint ──────────────────────────────────────────
-# First turns never read the cache. make_request() uses automatic caching,
-# which puts the breakpoint on the last block: the new user message, which is
-# different on every request. Writes happen only at a breakpoint, and a read
-# only finds an entry an earlier request wrote. So what could a new
-# conversation's first turn read? Add an explicit breakpoint where it would
-# find one. Keep the automatic one too; it caches each conversation as it grows.
+# The handbook is the same on every request, yet first turns never read the
+# cache. Why? make_request() turns on automatic caching (the top-level
+# cache_control); leave it in place. Add one explicit breakpoint where a new
+# conversation's first turn could read what an earlier request wrote.
+# Stuck? README, "Explain clue 4".
 # Changing request in place is fine; return it either way.
 # Hint: a breakpoint is cache_control on a block, like
 #   {"type": "text", "text": ..., "cache_control": {"type": "ephemeral"}}
 # and request["system"] can be a string or a list of text blocks.
 def place_breakpoint(request: dict) -> dict:
-    raise NotImplementedError("Clue 4: add an explicit cache_control breakpoint, keep the top-level one, then return request")
+    raise NotImplementedError("Clue 4: add a breakpoint where a first turn could read what an earlier request wrote")

@@ -25,8 +25,8 @@ MODEL = MODELS[PROVIDER]
 # https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock#regions
 AWS_REGION = os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
 
-# Room for adaptive thinking plus a short support reply. Thinking tokens bill as output:
-# https://platform.claude.com/docs/en/release-notes/overview (May 27, 2026)
+# Room for adaptive thinking plus a short support reply. Thinking tokens bill as output
+# and count toward max_tokens: https://platform.claude.com/docs/en/build-with-claude/thinking
 MAX_TOKENS = 2048
 
 # Shortest prefix Opus 5.5 will cache. Shorter prefixes run uncached with no error.
@@ -52,12 +52,14 @@ LIVE_CONVERSATIONS = 6
 # The bar a fix must clear. tests/test_offline.py asserts it, and app.py prints
 # "Case closed" only when your numbers clear it. Offline it's calibrated to the
 # simulated weekend, where the reference gets a 90.8% hit rate and $0.0171 per
-# conversation (README, "Where the docs are silent"). The bounds leave room for
+# conversation (README, "How offline mode works"). The bounds leave room for
 # small differences, like how you word the time.
 BAR = {
     "hit_rate": 0.88,                    # at least
     "dollars_per_conversation": 0.0190,  # at most
-    "friday_over_fixed": 2.8,            # Friday's bill over yours, at least
+    # Friday's bill over yours, at least. Only the tests check it: on this traffic the
+    # dollars bar implies it ($0.0539 / $0.0190 is 2.84).
+    "friday_over_fixed": 2.8,
     "first_turns_reading": 0.75,         # share of first turns that read the cache, at least
     "follow_ups_past_handbook": 0.90,    # share of follow-up turns that read more than the handbook, at least
 }

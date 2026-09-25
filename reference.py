@@ -30,8 +30,11 @@ def meter(usages: list) -> tuple[float, float]:
 # ── Clue 2. The witness ───────────────────────────────────────────────────
 def send_with_diagnostics(client, request: dict, previous_id: str | None):
     response = client.beta.messages.create(**request, diagnostics={"previous_message_id": previous_id})
-    reason = response.diagnostics.cache_miss_reason if response.diagnostics else None
-    return response, reason
+    if response.diagnostics is None:
+        return response, None  # nothing changed, or nothing to compare
+    if response.diagnostics.cache_miss_reason is None:
+        return response, "pending"  # the comparison was still running: check the next turn
+    return response, response.diagnostics.cache_miss_reason
 
 
 # ── Clue 3. Move the cache buster ─────────────────────────────────────────

@@ -21,12 +21,17 @@ https://platform.claude.com/docs/en/build-with-claude/prompt-caching
   request that wrote or last read them. 1h breakpoints must come before 5m.
 - A prefix shorter than config.MIN_CACHEABLE_TOKENS is never cached, and the
   request still succeeds.
-- Changing tool_choice, thinking, or output_config invalidates the messages
-  cache but not the tools or system cache.
+- Changing tool_choice invalidates the messages cache but not the tools or
+  system cache. Simplification: the docs mark thinking and effort changes as
+  model-specific for the tools and system caches, and treat an explicit
+  default effort as omitted. The sim treats thinking and output_config like
+  tool_choice and compares them as sent. No lab request sets either.
 
 What it doesn't do: count tokens like the real tokenizer (it uses about 4
 characters per token, so every count here is simulated), call tools, write
-real replies, or model concurrent requests. Replies are canned text.
+real replies, or model concurrent requests. Replies are canned text. When
+the last block is a breakpoint, input_tokens here is 0; the real API can
+report a few uncached tokens even then (the docs' diagnostics example shows 42).
 """
 import hashlib
 import itertools
@@ -102,6 +107,7 @@ class _Block:
     tokens: int
     cache_control: dict | None
     message: int | None  # index into messages, for message blocks
+    signature: str | None = None  # for thinking blocks
 
 
 def _flatten(tools, system, messages) -> list[_Block]:
@@ -125,7 +131,7 @@ def _flatten(tools, system, messages) -> list[_Block]:
             b = _plain(b)
             cc = b.pop("cache_control", None)
             key = _canon([i, message["role"], j, b])
-            blocks.append(_Block("messages", b.get("type", "text"), key, _tokens(b), cc, i))
+            blocks.append(_Block("messages", b.get("type", "text"), key, _tokens(b), cc, i, b.get("signature")))
     return blocks
 
 
@@ -273,9 +279,13 @@ class _Engine:
                 last_1h = bp
             else:
                 last_5m = bp
-        written_1h = cum[last_1h] - read if last_1h is not None else 0
-        after_1h = cum[last_1h] if last_1h is not None else read
-        written_5m = cum[last_5m] - after_1h if last_5m is not None else 0
+        # Billing with mixed TTLs, named as the docs name it: A is the highest
+        # cache hit, B the highest 1h breakpoint after A, C the last breakpoint.
+        # Reads for A, 1h writes for B - A, 5m writes for C - B.
+        a = read
+        b = cum[last_1h] if last_1h is not None else a
+        c = cum[last_5m] if last_5m is not None else b
+        written_1h, written_5m = b - a, c - b
         written = written_1h + written_5m
 
         self.count += 1
@@ -343,12 +353,11 @@ class _Engine:
         for b in blocks:
             if b.type != "thinking" or b.section != "messages":
                 continue
-            signature = json.loads(b.key)[3].get("signature")
-            if signature not in self.thinking:
+            if b.signature not in self.thinking:
                 continue
             first = next(i for i, x in enumerate(blocks) if x.message == b.message)
             before = content_hashes[first - 1] if first else _sha(_canon(["model", model]))
-            if before != self.thinking[signature]:
+            if before != self.thinking[b.signature]:
                 raise SimulatedAPIError("(offline) a thinking block was replayed after the system prompt, "
                                         "tools, or an earlier message changed")
 
@@ -377,8 +386,8 @@ class _Engine:
         for i, h in enumerate(prev["messages"]):
             if i >= len(fp["messages"]) or fp["messages"][i] != h:
                 return _changed("messages_changed", sum(fp["message_tokens"][i:]))
-        return None  # no divergence
-        # The sim never returns the pending state {"cache_miss_reason": null}.
+        # No divergence. The sim never returns the pending state {"cache_miss_reason": null}.
+        return None
 
 
 def _changed(kind: str, missed: int) -> dict:

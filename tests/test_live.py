@@ -14,6 +14,7 @@ import pytest
 import config
 from clients import has_diagnostics, make_client
 from support import WEEKEND, friday_request, replay, send_plain
+from truth import truth
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("LAB_LIVE") != "1", reason="live test: set LAB_LIVE=1 (makes billed API calls)"
@@ -34,12 +35,13 @@ def test_live_weekend_before_and_after_the_fix():
     friday = replay(client, conversations, friday_request, send)
     fixed = replay(client, conversations, fixed_request, send)
 
-    friday_hit, friday_dollars = solution.meter([t.usage for t in friday])
-    fixed_hit, fixed_dollars = solution.meter([t.usage for t in fixed])
+    # The test's own meter, as offline, so a bug in meter() can't hide a bad fix.
+    friday_hit, friday_dollars = truth(t.usage for t in friday)
+    fixed_hit, fixed_dollars = truth(t.usage for t in fixed)
     # Caching changes what input costs, not output, so compare input spend too.
     no_output = lambda turns: [t.usage.model_copy(update={"output_tokens": 0}) for t in turns]
-    friday_input = solution.meter(no_output(friday))[1]
-    fixed_input = solution.meter(no_output(fixed))[1]
+    friday_input = truth(no_output(friday))[1]
+    fixed_input = truth(no_output(fixed))[1]
     n = len(conversations)
     print(f"\n{config.PROVIDER} {config.MODEL}: {n} conversations, {len(fixed)} requests per run")
     print(f"Friday: hit rate {friday_hit:.1%}, ${friday_dollars / n:.4f} per conversation")
@@ -55,4 +57,4 @@ def test_live_weekend_before_and_after_the_fix():
     if has_diagnostics():
         # Diagnostics can come back pending ({"cache_miss_reason": null}) on a fast
         # response, so ask for the culprit on at least one follow-up turn, not all.
-        assert any(t.reason is not None and t.reason.type == "system_changed" for t in friday if t.number > 1)
+        assert any(getattr(t.reason, "type", None) == "system_changed" for t in friday if t.number > 1)

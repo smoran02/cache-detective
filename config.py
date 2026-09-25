@@ -16,13 +16,16 @@ MODELS = {
     "anthropic": "claude-opus-5-5",
     "bedrock": "anthropic.claude-opus-5-5",
 }
+if PROVIDER not in MODELS:
+    raise ValueError(f"PROVIDER must be offline, anthropic, or bedrock, not {PROVIDER!r}")
 MODEL = MODELS[PROVIDER]
 
 # Bedrock region. us-east-1 is one of the regions that serves Opus 5.5.
 # https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock#regions
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
-# Room for adaptive thinking plus a short support reply. Thinking tokens bill as output.
+# Room for adaptive thinking plus a short support reply. Thinking tokens bill as output:
+# https://platform.claude.com/docs/en/release-notes/overview (May 27, 2026)
 MAX_TOKENS = 2048
 
 # Shortest prefix Opus 5.5 will cache. Shorter prefixes run uncached with no error.

@@ -1,7 +1,8 @@
 """
 make_client() returns the client for config.PROVIDER. All three have
-client.messages.create; the Claude API and offline clients also have
-client.beta.messages.create, which is where the SDK takes cache diagnostics.
+client.messages.create and client.beta.messages.create; the SDK takes cache
+diagnostics on the beta method. Diagnostics itself is Claude API only (the
+offline client simulates the Claude API), so on Bedrock the lab never asks.
 """
 import anthropic
 
@@ -13,7 +14,9 @@ def make_client(provider: str = config.PROVIDER):
     if provider == "offline":
         return OfflineClient()
     if provider == "anthropic":
-        return anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+        # api_key defaults to the ANTHROPIC_API_KEY environment variable.
+        # https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/python
+        return anthropic.Anthropic()
     if provider == "bedrock":
         # Opus 5.5 runs on Claude in Amazon Bedrock, which serves the Messages
         # API; its client is AnthropicBedrockMantle. (AnthropicBedrock is the

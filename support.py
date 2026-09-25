@@ -32,7 +32,7 @@ def make_request(system, messages: list) -> dict:
 
 
 def friday_request(history: list, question: str, now: str) -> dict:
-    """Friday's deploy. Wren kept offering phone callbacks at 2am, so the time went in."""
+    """One turn's request as Friday's deploy left it. The deploy is data/friday.diff."""
     system = f"Current time: {now}\n\n{HANDBOOK}"
     return make_request(system, history + [{"role": "user", "content": question}])
 
@@ -54,14 +54,14 @@ class Turn:
     number: int  # 1 for the customer's first message
     at: str
     usage: object  # response.usage
-    reason: object  # diagnostics cache_miss_reason, or None
+    reason: object  # what send() returned: a cache_miss_reason, "pending", or None
 
 
 def replay(client, conversations: list, build, send) -> list[Turn]:
     """Replay conversations in time order, one request per customer message.
 
     build(history, question, now) returns the request dict for one turn.
-    send(client, request, previous_id) returns (response, cache_miss_reason or None).
+    send(client, request, previous_id) returns (response, reason).
     """
     events = sorted(
         (datetime.fromisoformat(t["at"]), c, n)
@@ -75,7 +75,13 @@ def replay(client, conversations: list, build, send) -> list[Turn]:
         convo, message = conversations[c], conversations[c]["turns"][n]
         if hasattr(client, "set_clock"):
             client.set_clock(when)  # offline: run on the traffic's clock, not the wall clock
-        request = build(history[c], message["text"], message["at"])
+            now = message["at"]
+        else:
+            # Live: the wall clock, as Friday's deploy used. Replaying the traffic's
+            # times would send the same prompts on every run, and one run would
+            # read what the last one wrote.
+            now = datetime.now().astimezone().isoformat(timespec="seconds")
+        request = build(history[c], message["text"], now)
         response, reason = send(client, request, previous_id[c])
         # History keeps the reply text only, so it's byte-stable from turn to turn
         # and no Opus 5.5 thinking block is sent back. Replaying one after the

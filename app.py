@@ -4,7 +4,7 @@ code and through yours, then prints cache hit rate and dollars per
 conversation on one screen.
 
     .venv/bin/python app.py                          # your code: starter.py
-    .venv/bin/python app.py --requests 3             # show each request of the first 3 conversations
+    .venv/bin/python app.py --requests 6             # show each request of the first 6 conversations
     LAB_SOLUTION=reference .venv/bin/python app.py   # the finished version
 """
 import argparse
@@ -72,6 +72,11 @@ def cached(u) -> tuple[int, int]:
     return u.cache_read_input_tokens or 0, u.cache_creation_input_tokens or 0
 
 
+def pending(reason) -> bool:
+    """send_with_diagnostics() returns "pending" when the comparison hadn't finished."""
+    return isinstance(reason, str) and reason == "pending"
+
+
 def print_requests(turns, n_conversations: int, diagnosed: bool):
     ids = list(dict.fromkeys(t.conversation for t in turns))  # in order of first request
     shown = set(ids[:n_conversations])
@@ -85,6 +90,8 @@ def print_requests(turns, n_conversations: int, diagnosed: bool):
         read, written = cached(t.usage)
         if not diagnosed:
             why = "(diagnostics off)"
+        elif pending(t.reason):
+            why = "pending (check the next turn)"
         elif t.reason is not None:
             missed = getattr(t.reason, "cache_missed_input_tokens", None)
             why = t.reason.type + (f" (~{missed:,} tokens missed)" if missed else "")
@@ -102,7 +109,9 @@ def print_reasons(turns):
     reads = Counter()
     for t in turns:
         first = t.number == 1
-        if t.reason is not None:
+        if pending(t.reason):
+            kind = "pending (check next turn)"
+        elif t.reason is not None:
             kind = t.reason.type
         else:
             kind = "none (nothing to compare)" if first else "none (no change)"
@@ -115,8 +124,8 @@ def print_reasons(turns):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--requests", type=int, default=1, metavar="N",
-                        help="show each request of the first N conversations (default 1)")
+    parser.add_argument("--requests", type=int, default=3, metavar="N",
+                        help="show each request of the first N conversations (default 3)")
     args = parser.parse_args()
 
     solution_name = os.environ.get("LAB_SOLUTION", "starter")
@@ -142,8 +151,8 @@ def main():
         (fh, fd), (yh, yd) = friday_meter, your_meter
         change = f"   ({(yd - fd) / fd:+.0%})" if fd else ""
         print(f"  Cache hit rate          {fh:>14.1%} {yh:>14.1%}")
-        print(f"  $ per conversation      {'$%.4f' % (fd / n):>14} {'$%.4f' % (yd / n):>14}")
-        print(f"  Weekend bill            {'$%.2f' % fd:>14} {'$%.2f' % yd:>14}{change}")
+        print(f"  $ per conversation      {f'${fd / n:.4f}':>14} {f'${yd / n:.4f}':>14}")
+        print(f"  Weekend bill            {f'${fd:.2f}':>14} {f'${yd:.2f}':>14}{change}")
     else:
         print("  Cache hit rate          clue 1 offline: write meter() in starter.py")
         print("  $ per conversation      clue 1 offline")
@@ -174,6 +183,8 @@ def main():
     todo = [name for name, _ in CLUES if name in lab.offline]
     if todo:
         print(f"  Next: {todo[0]}() in starter.py. Then run this again.")
+        if todo == ["place_breakpoint"]:
+            print("  First turns never read the cache. Why not?")
     elif friday_meter and your_meter:
         print(f"  Case closed: $ per conversation is down {1 - your_meter[1] / friday_meter[1]:.0%} from Friday's code."
               " Run the tests to confirm.")

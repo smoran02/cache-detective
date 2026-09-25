@@ -175,6 +175,8 @@ def _breakpoints(blocks: list[_Block], automatic: dict | None) -> list[tuple[int
             raise SimulatedAPIError("(offline) 4 explicit breakpoints leave no slot for automatic caching")
         # The automatic breakpoint goes on the last cacheable block. Thinking
         # blocks and empty text blocks can't be cached, so walk back past them.
+        # (Unconfirmed: the docs don't list which blocks are ineligible for the
+        # automatic breakpoint. The lab's requests always end on a user message.)
         last = next((i for i in range(len(blocks) - 1, -1, -1)
                      if blocks[i].type not in ("thinking", "redacted_thinking")
                      and blocks[i].tokens > 0), None)
@@ -257,8 +259,8 @@ class _Engine:
 
         # Writes: at each breakpoint past the hit that meets the minimum length.
         # Breakpoints inside the read prefix refresh their own entries.
-        # (Offline assumption: the docs say each use refreshes an entry; the sim
-        # counts a matching earlier breakpoint as a use.)
+        # (Unconfirmed: the docs say each use refreshes an entry but don't say
+        # whether a matching earlier breakpoint counts as a use. The sim counts it.)
         last_1h = last_5m = None
         for bp, ttl in breakpoints:
             if hit is not None and bp <= hit:
@@ -360,7 +362,10 @@ class _Engine:
         # Unconfirmed: the docs say only the earliest divergence is reported but
         # don't give an order for model, system, and tools. The sim checks the
         # model first, then follows the prefix order: tools, system, messages.
-        # cache_missed_input_tokens is estimated per block here, not per byte.
+        # cache_missed_input_tokens is estimated per block here, not from byte
+        # lengths as the API does; like the real field, treat it as a magnitude.
+        # Unconfirmed: whether the API compares against the previous request only
+        # (as here) or also against its response content.
         if fp["model"] != prev["model"]:
             return _changed("model_changed", fp["total"])
         if fp["tools"] != prev["tools"]:

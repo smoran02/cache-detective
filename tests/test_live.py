@@ -15,7 +15,7 @@ import pytest
 import config
 from clients import has_diagnostics, make_client
 from support import WEEKEND, friday_request, replay, send_plain
-from truth import truth
+from checks import truth
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("LAB_LIVE") != "1", reason="live test: set LAB_LIVE=1 (makes billed API calls)"

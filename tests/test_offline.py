@@ -1,8 +1,9 @@
 """
 Offline end-to-end test: the whole lab on the simulated client, with no API
 key and no network. It imports the 4 functions from the module named by
-LAB_SOLUTION (default: starter), replays the weekend through Friday's code
-and through the fix, and checks the fix against config.BAR, the same bar
+LAB_SOLUTION (default: starter), checks each against its clue's contract
+(checks.py, which the readout runs too), replays the weekend through Friday's
+code and through the fix, and checks the fix against config.BAR, the same bar
 app.py uses before it says "Case closed".
 
     .venv/bin/python -m pytest -q tests                           # your starter.py
@@ -10,21 +11,24 @@ app.py uses before it says "Case closed".
     LAB_SOLUTION=reference .venv/bin/python -m pytest -q tests    # the finished version
 """
 import importlib
+import json
 import os
 import sys
 import types
+from datetime import datetime
 
 import pytest
-from anthropic.types import CacheCreation, Usage
-from anthropic.types.beta import BetaMessage
 
+import app
 import config
-from app import clue_3_problem, thursday_request
+import usage_report
+from app import thursday_request
+from checks import clue_1_problem, clue_2_problem, clue_3_problem, clue_4_problem, reason_problem, shortfalls, truth
 from offline import OfflineClient
 from support import HANDBOOK, WEEKEND, friday_request, make_request, replay, send_plain
-from truth import truth
 
 solution = importlib.import_module(os.environ.get("LAB_SOLUTION", "starter"))
+FUNCTIONS = ("meter", "send_with_diagnostics", "build_request", "place_breakpoint")
 
 # config.BAR is calibrated to the offline client, which counts an earlier
 # breakpoint inside the read prefix as a use that refreshes its entry
@@ -37,44 +41,11 @@ def fixed_request(history, question, now):
     return solution.place_breakpoint(solution.build_request(history, question, now))
 
 
-class CannedClient:
-    """Answers client.beta.messages.create with one fixed diagnostics value."""
-
-    def __init__(self, diagnostics):
-        self.diagnostics = diagnostics
-        self.beta = self
-        self.messages = self
-
-    def create(self, **request):
-        assert "diagnostics" in request, "send a diagnostics object on every request"
-        return BetaMessage.model_validate({
-            "id": "msg_canned", "type": "message", "role": "assistant", "model": config.MODEL,
-            "content": [{"type": "text", "text": "ok"}], "stop_reason": "end_turn", "stop_sequence": None,
-            "usage": {"input_tokens": 10, "output_tokens": 5}, "diagnostics": self.diagnostics,
-        })
-
-
 def test_clue_1_meter_reads_and_prices_the_usage_fields():
-    usages = [
-        Usage(input_tokens=100, output_tokens=50, cache_creation_input_tokens=1000, cache_read_input_tokens=0),
-        Usage(input_tokens=20, output_tokens=50, cache_creation_input_tokens=0, cache_read_input_tokens=1000),
-        Usage(input_tokens=30, output_tokens=10, cache_creation_input_tokens=None, cache_read_input_tokens=None),
-    ]
-    hit_rate, dollars = solution.meter(usages)
-    # 1,000 of 2,150 input tokens came from the cache.
-    assert hit_rate == pytest.approx(1000 / 2150)
-    # 150 uncached at $4/MTok + 1,000 written at $5 + 1,000 read at $0.20 + 110 output at $20.
-    assert dollars == pytest.approx(0.0006 + 0.005 + 0.0002 + 0.0022)
-    # Your own prices (Take it to your app): double every price, double the bill.
-    doubled = {name: 2 * price for name, price in config.PRICES.items()}
-    assert solution.meter(usages, doubled)[1] == pytest.approx(2 * dollars), "price with the prices argument"
-    assert solution.meter([]) == (0.0, 0.0), "no usages: a 0.0 hit rate and $0"
-    # 1,000 tokens written with a 1-hour TTL. cache_creation_input_tokens already counts them, so
-    # price each once: at $5/MTok as the starter asks, or at $8 if you did Keep going's TTL step.
-    one_hour = Usage(input_tokens=0, output_tokens=0, cache_creation_input_tokens=1000, cache_read_input_tokens=0,
-                     cache_creation=CacheCreation(ephemeral_5m_input_tokens=0, ephemeral_1h_input_tokens=1000))
-    assert solution.meter([one_hour])[1] in (pytest.approx(0.005), pytest.approx(0.008)), (
-        "price each written token once: cache_creation_input_tokens already includes the 1-hour writes")
+    # Three usages whose four dollar terms all differ, your own prices, no usages at all, and
+    # writes split by TTL (checks.clue_1_problem). The readout runs the same check.
+    problem = clue_1_problem(solution.meter)
+    assert problem is None, problem
 
 
 def test_clue_2_diagnostics_names_the_culprit():
@@ -84,34 +55,32 @@ def test_clue_2_diagnostics_names_the_culprit():
     assert later, "the first 10 conversations should include follow-up turns"
     assert all(t.reason is None for t in first), "a first turn has nothing to compare against: return None"
     assert all(t.reason is not None for t in later), "every follow-up turn should name a reason"
-    assert not any(isinstance(t.reason, str) for t in later), (
-        "return the cache_miss_reason itself, not its .type (the readout reads .type)")
+    problem = next(filter(None, (reason_problem(t.reason) for t in later)), None)
+    assert problem is None, problem
     kinds = {t.reason.type for t in later}
     assert kinds == {"system_changed"}, (
         f"got {sorted(kinds)}. previous_message_not_found means the turn before went out without a diagnostics object")
 
 
-def test_clue_2_tells_pending_from_no_change():
-    # The three documented states of response.diagnostics. The offline client
-    # never returns pending, so this uses a canned response for each.
-    request = make_request(HANDBOOK, [{"role": "user", "content": "Do you rent bear canisters?"}])
-    _, none = solution.send_with_diagnostics(CannedClient(None), request, "msg_previous")
-    _, still_running = solution.send_with_diagnostics(CannedClient({"cache_miss_reason": None}), request, "msg_previous")
-    _, changed = solution.send_with_diagnostics(
-        CannedClient({"cache_miss_reason": {"type": "system_changed", "cache_missed_input_tokens": 3200}}),
-        request, "msg_previous")
-    assert none is None, "diagnostics None means nothing changed (or nothing to compare): return None"
-    assert still_running == "pending", 'diagnostics {"cache_miss_reason": null} means the comparison was still running: return "pending"'
-    assert not isinstance(changed, str), "return the cache_miss_reason itself, not its .type"
-    assert changed.type == "system_changed", "return the cache_miss_reason itself"
+def test_clue_2_returns_each_documented_state():
+    # None, pending, and three reasons, from a canned client (checks.clue_2_problem): the offline
+    # client never returns pending, unavailable, or previous_message_not_found on the lab's traffic.
+    problem = clue_2_problem(solution.send_with_diagnostics)
+    assert problem is None, problem
 
 
 def test_clue_3_system_prompt_is_stable_and_the_time_moved():
-    # Builds one turn at four times: 09:00 and 23:30 on Saturday, 00:30 on Sunday, and 09:00 on Monday.
-    # The system prompt must be the same at all four, and the new message different at all four, so a
-    # date left in the system prompt fails, and so does a time with no date. The readout runs the same
-    # check (app.clue_3_problem) before it says "Case closed".
+    # Builds one turn at five times (checks.CLUE_3_TIMES). The system prompt must be the same at all
+    # five, and the new message different at all five, so a date left in the system prompt fails, and
+    # so does a time with no date, or a weekday with no date. The readout runs the same check.
     problem = clue_3_problem(solution.build_request)
+    assert problem is None, problem
+
+
+def test_clue_4_marks_the_system_prompt_it_was_given():
+    # A system prompt other than the bare handbook, as a string and as a list of blocks
+    # (checks.clue_4_problem): its text must survive, with a breakpoint on it.
+    problem = clue_4_problem(solution.place_breakpoint)
     assert problem is None, problem
 
 
@@ -161,21 +130,17 @@ def test_the_weekend_before_and_after_the_fix():
         assert dollars == pytest.approx(fixed_dollars, rel=1e-6)
 
     # A fix that clears this test's bar clears the readout's too, so app.py says "Case closed".
-    import app
-    assert not app.shortfalls((friday_hit, friday_dollars), (fixed_hit, fixed_dollars), fixed, n,
-                              live=False, diagnosed=True)
+    assert not shortfalls(friday, fixed, n, live=False, diagnosed=True)
 
 
-def readout(monkeypatch, capsys, **swap) -> str:
+def readout(monkeypatch, capsys, *args, **swap) -> str:
     """What app.py prints for your solution, with any of its 4 functions swapped out."""
-    import app
-
     module = types.ModuleType("readout_under_test")
-    for name in ("meter", "send_with_diagnostics", "build_request", "place_breakpoint"):
+    for name in FUNCTIONS:
         setattr(module, name, swap.get(name, getattr(solution, name)))
     monkeypatch.setitem(sys.modules, module.__name__, module)
     monkeypatch.setenv("LAB_SOLUTION", module.__name__)
-    monkeypatch.setattr(sys, "argv", ["app.py"])
+    monkeypatch.setattr(sys, "argv", ["app.py", *args])
     app.main()
     return capsys.readouterr().out
 
@@ -193,9 +158,22 @@ def no_automatic_breakpoint(request):
     return {key: value for key, value in request.items() if key != "cache_control"}
 
 
+def replaces_the_system_prompt(request):
+    return {**request, "system": [{"type": "text", "text": HANDBOOK, "cache_control": {"type": "ephemeral"}}]}
+
+
 def time_after_the_question(history, question, now):
     return make_request(HANDBOOK, history + [{"role": "user", "content": question},
                                              {"role": "user", "content": f"Current time: {now}"}])
+
+
+def time_at_the_end_of_the_system_prompt(history, question, now):
+    return make_request(f"{HANDBOOK}\n\nCurrent time: {now}", history + [{"role": "user", "content": question}])
+
+
+def weekday_and_clock(history, question, now):
+    when = datetime.fromisoformat(now)
+    return make_request(HANDBOOK, history + [{"role": "user", "content": f"Current time: {when:%A %I:%M %p}\n\n{question}"}])
 
 
 def appends_to_history(history, question, now):
@@ -213,24 +191,68 @@ def swaps_none_and_pending(client, request, previous_id):
     return response, "pending" if reason is None else None if reason == "pending" else reason
 
 
+def pending_as_none(client, request, previous_id):
+    response, reason = solution.send_with_diagnostics(client, request, previous_id)
+    return response, None if reason == "pending" else reason
+
+
+def unavailable_as_none(client, request, previous_id):
+    response, reason = solution.send_with_diagnostics(client, request, previous_id)
+    return response, None if getattr(reason, "type", None) in ("unavailable", "previous_message_not_found") else reason
+
+
+def returns_the_diagnostics(client, request, previous_id):
+    response = client.beta.messages.create(**request, diagnostics={"previous_message_id": previous_id})
+    return response, response.diagnostics
+
+
 def no_diagnostics_object(client, request, previous_id):
     return client.beta.messages.create(**request), None
+
+
+def metered(output=True, write_price="cache_write_5m", read_price="cache_read", one_hour_for_all=False):
+    """A meter() with one pricing slip."""
+    def meter(usages, prices=None):
+        prices = prices or config.PRICES
+        read = total = 0
+        dollars = 0.0
+        for u in usages:
+            r, w = u.cache_read_input_tokens or 0, u.cache_creation_input_tokens or 0
+            one_hour = u.cache_creation and u.cache_creation.ephemeral_1h_input_tokens
+            read, total = read + r, total + r + w + u.input_tokens
+            write = prices["cache_write_1h"] if one_hour_for_all and one_hour else prices[write_price]
+            reads = 0.1 * prices["input"] if read_price == "0.1x" else prices[read_price]
+            dollars += u.input_tokens * prices["input"] + w * write + r * reads + output * u.output_tokens * prices["output"]
+        return (read / total if total else 0.0), dollars
+    return meter
 
 
 @offline_only
 @pytest.mark.parametrize("wrong_fix, says", [
     ({"place_breakpoint": lambda request: request}, "first turns read the cache on"),
     ({"build_request": friday_request}, "the system prompt must not change"),
+    ({"build_request": time_at_the_end_of_the_system_prompt}, "the system prompt must not change"),
     ({"place_breakpoint": no_automatic_breakpoint}, "follow-up turns read past the handbook on"),
+    ({"place_breakpoint": replaces_the_system_prompt}, "its text changed"),
     ({"build_request": thursday_request}, "Wren needs the time, date included"),
+    ({"build_request": weekday_and_clock}, "Wren needs the time, date included"),
     ({"build_request": time_after_the_question}, "end on the customer's new message"),
     ({"build_request": appends_to_history}, "don't change history"),
     ({"send_with_diagnostics": returns_the_type}, "returned a string"),
-    ({"send_with_diagnostics": swaps_none_and_pending}, "a first turn has nothing to compare"),
+    ({"send_with_diagnostics": swaps_none_and_pending}, "diagnostics None means nothing changed"),
+    ({"send_with_diagnostics": pending_as_none}, "the comparison was still running"),
+    ({"send_with_diagnostics": unavailable_as_none}, "unavailable means the comparison couldn't run"),
+    ({"send_with_diagnostics": returns_the_diagnostics}, "returned response.diagnostics"),
     ({"send_with_diagnostics": no_diagnostics_object}, "send a diagnostics object on every request"),
-], ids=["no breakpoint", "time in the system prompt", "no automatic breakpoint", "Friday's deploy rolled back",
+    ({"meter": metered(output=False)}, "output_tokens are left out"),
+    ({"meter": metered(write_price="input")}, "cache writes are priced at prices['input']"),
+    ({"meter": metered(read_price="0.1x")}, "cache reads are priced at 0.1x input"),
+    ({"meter": metered(one_hour_for_all=True)}, "at 1 hour cost"),
+], ids=["no breakpoint", "time in the system prompt", "time at the end of the system prompt",
+        "no automatic breakpoint", "system prompt replaced", "Friday's deploy rolled back", "weekday, no date",
         "time after the question", "history.append", "reason.type", "None and pending swapped",
-        "no diagnostics object"])
+        "pending as None", "unavailable as None", "response.diagnostics", "no diagnostics object",
+        "meter without output", "writes at the input price", "reads at 0.1x", "all writes at 1 hour"])
 def test_the_readout_closes_the_case_only_on_a_real_fix(capsys, monkeypatch, wrong_fix, says):
     # With your other functions, each wrong fix must fall short on screen too, and say why.
     out = readout(monkeypatch, capsys, **wrong_fix)
@@ -238,13 +260,49 @@ def test_the_readout_closes_the_case_only_on_a_real_fix(capsys, monkeypatch, wro
     assert "Next:" in out or says in out, f"the readout should say {says!r} (if a clue test fails too, fix that first)"
 
 
+def not_written(*args):
+    raise NotImplementedError
+
+
+@offline_only
+def test_the_readout_checks_clue_3_before_pointing_to_clue_4(capsys, monkeypatch):
+    # With place_breakpoint() still to write, a wrong clue 3 is named before "Next:", and the
+    # clue 4 teaser shows only once follow-up turns read the cache and first turns don't.
+    reference = pytest.importorskip("reference")
+    stage = {name: getattr(reference, name) for name in FUNCTIONS} | {"place_breakpoint": not_written}
+    out = readout(monkeypatch, capsys, **stage)
+    assert "Next: place_breakpoint()" in out and "First turns never read the cache. Why not?" in out
+    out = readout(monkeypatch, capsys, **stage | {"build_request": time_at_the_end_of_the_system_prompt})
+    assert "Clue 3: the system prompt must not change" in out
+    assert "First turns never read" not in out
+
+
 @offline_only
 def test_the_readout_shows_the_readmes_numbers(capsys, monkeypatch):
     # The README's checkpoint table, on reference.py. Editing handbook.md or weekend.json moves
     # these, so update the README (and the numbers in config.py and offline.py) with them.
     reference = pytest.importorskip("reference")
-    out = readout(monkeypatch, capsys, **{name: getattr(reference, name) for name in
-                                          ("meter", "send_with_diagnostics", "build_request", "place_breakpoint")})
+    out = readout(monkeypatch, capsys, **{name: getattr(reference, name) for name in FUNCTIONS})
     for number in ("0.0%", "$0.0539", "$0.0172 per conversation", "3.1x", "90.8%", "$0.0171",
                    "3,098", "411 follow-up turns said system_changed, now 0", "on 0 of 252, now 202", "Case closed"):
         assert number in out, f"the readout no longer shows {number}: update the README's checkpoint table"
+
+
+def diagnosed_send(client, request, previous_id):
+    return client.beta.messages.create(**request, diagnostics={"previous_message_id": previous_id}), None
+
+
+@offline_only
+def test_usage_report_reads_back_a_usage_log(capsys, monkeypatch, tmp_path):
+    # README, Take it to your app: app.py --log writes usage.to_dict() one line per request,
+    # and usage_report.py reads it back into the SDK's Usage type, beta fields and all.
+    log = tmp_path / "usage.jsonl"
+    readout(monkeypatch, capsys, "--log", str(log))
+    assert len(log.read_text().splitlines()) == sum(len(c["turns"]) for c in WEEKEND)
+    turns = replay(OfflineClient(), WEEKEND[:10], friday_request, diagnosed_send)
+    log.write_text("".join(json.dumps(t.usage.to_dict()) + "\n" for t in turns))
+    monkeypatch.setattr(usage_report, "meter", lambda usages, prices: truth(usages))
+    hit_rate, dollars = truth(t.usage for t in turns)
+    assert usage_report.report(str(log)) == (
+        f"{len(turns)} requests: {hit_rate:.1%} of input read from the cache, ${dollars:.2f}")
+    assert usage_report.PRICES == config.PRICES, "usage_report.py's prices should match config.PRICES"

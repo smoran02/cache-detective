@@ -85,10 +85,13 @@ def replay(client, conversations: list, build, send) -> list[Turn]:
         request = build(history[c], message["text"], now)
         response, reason = send(client, request, previous_id[c])
         # History keeps the reply text only, so it's byte-stable from turn to turn
-        # and no Opus 5.5 thinking block is sent back. Replaying one after the
-        # system prompt changed is a 400 on accounts created since 08/31/26, and
-        # Friday's system prompt changes on every request. (Unconfirmed: whether
-        # live diagnostics would flag a reply sent back without its thinking block.)
+        # and no Opus 5.5 thinking block is sent back. The Thinking page allows it
+        # ("outside tool use, omit prior turns' thinking"), and replaying one after
+        # the system prompt changed is a 400 on accounts created since 08/31/26:
+        # Friday's system prompt changes on every request.
+        # https://platform.claude.com/docs/en/build-with-claude/thinking#preserving-thinking-blocks
+        # (Unconfirmed: whether live diagnostics would flag a reply sent back
+        # without its thinking block.)
         history[c] = request["messages"] + [{"role": "assistant", "content": reply_text(response)}]
         previous_id[c] = response.id
         turns.append(Turn(convo["id"], n + 1, message["at"], response.usage, reason))

@@ -16,7 +16,7 @@ from app import thursday_request
 from divergence import first_divergence, fingerprint
 from offline import OfflineClient, SimulatedAPIError
 from support import HANDBOOK, WEEKEND, friday_request, make_request, replay, send_plain
-from truth import truth
+from checks import truth
 
 BP = {"type": "ephemeral"}
 BP_1H = {"type": "ephemeral", "ttl": "1h"}
@@ -130,6 +130,24 @@ def test_an_entry_lives_5_minutes_from_its_last_use():
     assert ask(client, 899, system).usage.cache_read_input_tokens == 0  # 5:01 after the last use
 
 
+def test_a_read_found_by_looking_back_refreshes_that_entry():
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#how-prompt-caching-works
+    client = OfflineClient()
+    hello = {"role": "user", "content": "hello"}
+    ask(client, 0, [block(1000)], cache_control=BP)  # automatic caching writes through "hello"
+    client.set_clock(200)
+    follow_up = client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)],
+                                       messages=[hello, {"role": "assistant", "content": "hi"},
+                                                 {"role": "user", "content": "and?"}], cache_control=BP)
+    assert follow_up.usage.cache_read_input_tokens == 1002  # found looking back from "and?"
+    # 450 seconds after the write, 250 after that read: the entry is alive only if the read refreshed it.
+    client.set_clock(450)
+    other = client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)],
+                                   messages=[hello, {"role": "assistant", "content": "another reply"},
+                                             {"role": "user", "content": "so?"}], cache_control=BP)
+    assert other.usage.cache_read_input_tokens == 1002
+
+
 @pytest.mark.parametrize("refresh, reads", [(True, 1000), (False, 0)], ids=["the sim's reading", "the other reading"])
 def test_a_breakpoint_inside_the_read_refreshes_its_entry(monkeypatch, refresh, reads):
     # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#mixing-different-ttls
@@ -164,6 +182,11 @@ def test_diagnostics_compares_only_with_requests_that_sent_it():
     assert changed.diagnostics.cache_miss_reason.type == "system_changed"
     # Unconfirmed reading (offline.py, _diagnose): missed tokens are counted per block from the change on.
     assert changed.diagnostics.cache_miss_reason.cache_missed_input_tokens == 1000 + 2  # the system prompt and "hello"
+    # With tools ahead of the system prompt, the tools aren't missed.
+    with_tools = client.beta.messages.create(**request, tools=[TOOL], diagnostics={"previous_message_id": None})
+    changed = client.beta.messages.create(**{**request, "system": block(1000, "t")["text"]}, tools=[TOOL],
+                                          diagnostics={"previous_message_id": with_tools.id})
+    assert changed.diagnostics.cache_miss_reason.cache_missed_input_tokens == 1000 + 2
     unmarked = client.beta.messages.create(**request)  # no diagnostics object: no fingerprint kept
     after = client.beta.messages.create(**request, diagnostics={"previous_message_id": unmarked.id})
     assert after.diagnostics.cache_miss_reason.type == "previous_message_not_found"
@@ -186,15 +209,22 @@ def test_automatic_and_explicit_breakpoints_on_one_block_must_agree_on_ttl():
         ask(OfflineClient(), 0, [block(1000)], [block(10, "m", BP)], cache_control=BP_1H)
 
 
-def test_the_automatic_breakpoint_walks_back_past_a_thinking_block():
+@pytest.mark.parametrize("last", [
+    {"role": "assistant", "content": [{"type": "thinking", "thinking": "", "signature": "sig"}]},
+    {"role": "user", "content": [{"type": "text", "text": ""}]},
+], ids=["a thinking block", "an empty text block"])
+def test_the_automatic_breakpoint_walks_back_past_a_block_that_cant_be_cached(last):
     # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#edge-cases
-    # Unconfirmed reading (offline.py, _breakpoints): thinking blocks can't be cached, so the sim skips them.
-    response = OfflineClient().messages.create(
-        model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)], cache_control=BP, messages=[
-            {"role": "user", "content": "hello"},
-            {"role": "assistant", "content": [{"type": "thinking", "thinking": "", "signature": "sig"}]},
-        ])
-    assert response.usage.cache_creation_input_tokens == 1000 + 2  # through "hello", not the thinking block
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#what-cannot-be-cached
+    # Unconfirmed reading (offline.py, _breakpoints): thinking blocks and empty text blocks can't be cached,
+    # so the sim skips them.
+    client = OfflineClient()
+    client.set_clock(0)
+    response = client.messages.create(model=config.MODEL, max_tokens=config.MAX_TOKENS, system=[block(1000)],
+                                      cache_control=BP, messages=[{"role": "user", "content": "hello"}, last])
+    assert response.usage.cache_creation_input_tokens == 1000 + 2
+    # The entry ends at "hello", not at the block after it, so a request that ends at "hello" reads it.
+    assert ask(client, 1, [block(1000)], cache_control=BP).usage.cache_read_input_tokens == 1000 + 2
 
 
 def test_the_cache_is_per_model():
@@ -208,13 +238,18 @@ def test_the_cache_is_per_model():
     assert other.usage.cache_read_input_tokens == 0
 
 
-def test_tool_choice_invalidates_the_messages_cache_only():
+@pytest.mark.parametrize("before, after", [
+    ({"tool_choice": {"type": "auto"}}, {"tool_choice": {"type": "none"}}),
+    ({"output_config": {"effort": "high"}}, {"output_config": {"effort": "max"}}),
+    ({}, {"thinking": {"type": "adaptive"}}),
+], ids=["tool_choice", "effort", "thinking"])
+def test_request_parameters_invalidate_the_messages_cache_only(before, after):
     # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#what-invalidates-the-cache
+    # Simplification (offline.py docstring): thinking and effort are treated like tool_choice, compared as sent.
     client = OfflineClient()
     system = [block(1000, cache_control=BP)]
-    for at, choice in ((0, "auto"), (1, "auto"), (2, "none")):
-        response = ask(client, at, system, [block(600, "m")], tools=[TOOL],
-                       tool_choice={"type": choice}, cache_control=BP)
+    for at, params in ((0, before), (1, before), (2, after)):
+        response = ask(client, at, system, [block(600, "m")], tools=[TOOL], cache_control=BP, **params)
         if at == 1:
             assert response.usage.cache_read_input_tokens > 1600  # tools, system, and the message
     assert 1000 < response.usage.cache_read_input_tokens < 1600  # tools and system only
@@ -262,16 +297,43 @@ def test_diagnostics_reports_the_earliest_divergence_in_prefix_order():
     # checks the model, then follows the prefix: tools, system, messages.
     client = OfflineClient()
     first = diagnose(client, None, tools=[TOOL])
-    both = diagnose(client, first.id, tools=[{**TOOL, "description": "Find an order."}], system=block(1000, "t")["text"])
-    assert both.diagnostics.cache_miss_reason.type == "tools_changed"
+    changed_tool = {**TOOL, "description": "Find an order."}
+    both = diagnose(client, first.id, tools=[changed_tool], system=block(1000, "t")["text"])
+    reason = both.diagnostics.cache_miss_reason
+    assert reason.type == "tools_changed"
+    assert reason.cache_missed_input_tokens == both.usage.input_tokens + both.usage.cache_creation_input_tokens
+    everything = diagnose(client, both.id, model="another-model", tools=[TOOL])
+    assert everything.diagnostics.cache_miss_reason.type == "model_changed"
 
 
-def test_diagnostics_is_unavailable_when_only_request_parameters_changed():
+def test_diagnostics_names_a_changed_or_dropped_message():
     # https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#cache-miss-reason-types
+    client = OfflineClient()
+    turns = [{"role": "user", "content": [block(10, "q")]}, {"role": "assistant", "content": [block(20, "a")]},
+             {"role": "user", "content": [block(30, "b")]}]
+    first = diagnose(client, None, messages=turns)
+    edited = diagnose(client, first.id, messages=[turns[0], {"role": "assistant", "content": [block(20, "e")]}, turns[2]])
+    reason = edited.diagnostics.cache_miss_reason
+    # Unconfirmed reading (offline.py, _diagnose): missed tokens are counted per block from the change on.
+    assert (reason.type, reason.cache_missed_input_tokens) == ("messages_changed", 20 + 30)
+    dropped = diagnose(client, edited.id, messages=turns[:1])
+    assert dropped.diagnostics.cache_miss_reason.type == "messages_changed"
+
+
+def test_diagnostics_is_unavailable_when_request_parameters_changed():
+    # https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#cache-miss-reason-types
+    # "a model/system/tools match where tool_choice ... or the set of anthropic-beta headers differs"
     client = OfflineClient()
     first = diagnose(client, None, tools=[TOOL], tool_choice={"type": "auto"})
     changed = diagnose(client, first.id, tools=[TOOL], tool_choice={"type": "none"})
     assert changed.diagnostics.cache_miss_reason.type == "unavailable"
+    beta = diagnose(client, changed.id, tools=[TOOL], tool_choice={"type": "none"}, betas=["cache-diagnosis-2026-04-07"])
+    assert beta.diagnostics.cache_miss_reason.type == "unavailable"
+    # Unconfirmed reading (offline.py, _diagnose): with a parameter and a message both changed, the row
+    # above still applies (model, system, and tools match), so the sim checks parameters before messages.
+    both = diagnose(client, beta.id, tools=[TOOL], tool_choice={"type": "auto"},
+                    messages=[{"role": "user", "content": "goodbye"}])
+    assert both.diagnostics.cache_miss_reason.type == "unavailable"
 
 
 @pytest.mark.parametrize("messages", [
@@ -280,9 +342,12 @@ def test_diagnostics_is_unavailable_when_only_request_parameters_changed():
     [{"role": "system", "content": "Current time: 09:00"}, {"role": "user", "content": "hello"}],
     [{"role": "user", "content": "hello"}, {"role": "system", "content": "Current time: 09:00"},
      {"role": "user", "content": "and?"}],
+    [{"role": "user", "content": "hello"}, {"role": "assistant", "content": "hi"},
+     {"role": "system", "content": "Current time: 09:00"}],
     [{"role": "user", "content": {"type": "text", "text": "hello"}}],
 ], ids=["no messages", "text that isn't a string", "system message before the user message",
-        "system message followed by a user message", "content that's one block, not a list"])
+        "system message followed by a user message", "system message after an assistant message",
+        "content that's one block, not a list"])
 def test_requests_the_api_rejects_are_400s(messages):
     # https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
     with pytest.raises(SimulatedAPIError):
@@ -337,6 +402,22 @@ def test_first_divergence_agrees_with_diagnostics():
     first = client.beta.messages.create(**turn_1, diagnostics={"previous_message_id": None})
     second = client.beta.messages.create(**turn_2, diagnostics={"previous_message_id": first.id})
     assert second.diagnostics.cache_miss_reason.type == "system_changed"
+
+
+def test_first_divergence_sees_request_parameters_the_way_diagnostics_does():
+    # https://platform.claude.com/docs/en/build-with-claude/prompt-caching#what-invalidates-the-cache
+    # An effort or tool_choice change invalidates the messages cache; diagnostics calls it unavailable.
+    request = make_request(HANDBOOK, [{"role": "user", "content": "hi"}])
+    for before, after in (({"output_config": {"effort": "high"}}, {"output_config": {"effort": "max"}}),
+                          ({"tools": [TOOL], "tool_choice": {"type": "auto"}},
+                           {"tools": [TOOL], "tool_choice": {"type": "none"}})):
+        assert first_divergence({**request, **before}, {**request, **after}) == "params"
+        client = OfflineClient()
+        first = client.beta.messages.create(**request, **before, diagnostics={"previous_message_id": None})
+        second = client.beta.messages.create(**request, **after, diagnostics={"previous_message_id": first.id})
+        assert second.diagnostics.cache_miss_reason.type == "unavailable"
+    # A string system prompt and the same text as one block are one request, and so are no tools and [].
+    assert first_divergence(request, {**request, "system": [{"type": "text", "text": HANDBOOK}], "tools": []}) is None
 
 
 def test_fridays_deploy_tripled_the_bill():

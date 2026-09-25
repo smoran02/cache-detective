@@ -25,7 +25,8 @@ from support import HANDBOOK, make_request
 # Hint: u.input_tokens, u.cache_creation_input_tokens, u.cache_read_input_tokens, u.output_tokens
 def meter(usages: list, prices: dict | None = None) -> tuple[float, float]:
     prices = prices or config.PRICES
-    raise NotImplementedError("Clue 1: add up the three input fields and output_tokens, price them with prices, return (hit_rate, dollars)")
+    raise NotImplementedError("Clue 1: add up the three input fields and output_tokens,"
+                              " price them with prices, return (hit_rate, dollars)")
 
 
 # ── Clue 2. The witness ───────────────────────────────────────────────────
@@ -41,7 +42,8 @@ def meter(usages: list, prices: dict | None = None) -> tuple[float, float]:
 #   response.diagnostics.cache_miss_reason otherwise (its .type names what changed)
 # Hint: client.beta.messages.create(**request, diagnostics={...})
 def send_with_diagnostics(client, request: dict, previous_id: str | None):
-    raise NotImplementedError("Clue 2: call client.beta.messages.create with diagnostics={'previous_message_id': previous_id}")
+    raise NotImplementedError("Clue 2: call client.beta.messages.create"
+                              " with diagnostics={'previous_message_id': previous_id}")
 
 
 # ── Clue 3. Move the cache buster ─────────────────────────────────────────

@@ -37,10 +37,13 @@ https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-me
 
 What it doesn't do: count tokens like the real tokenizer (it uses about 4
 characters per token, so every count here is simulated), call tools, write
-real replies, or model concurrent requests. Replies are canned text, and
-their lengths vary with the request. When the last block is a breakpoint,
-input_tokens here is 0, as the docs' definition (tokens after the last
-breakpoint) implies.
+real replies, model concurrent requests, or expire diagnostics fingerprints
+(the docs say they last "a short period"; here they last the whole run).
+Replies are canned text, and their lengths vary with the request.
+Simplification: input_tokens counts only the tokens after the last breakpoint,
+so when the last block is a breakpoint it's 0 here. The docs define it that
+way, but the example response on the cache diagnostics page shows 42. The
+first live run will show the real count.
 
 tests/test_simulator.py has a test for each rule above and for each
 Unconfirmed reading below.
@@ -458,6 +461,9 @@ class _Engine:
             return _changed("tools_changed", fp["total"])
         if fp["system"] != prev["system"]:
             return _changed("system_changed", fp["total"] - fp["tools_tokens"])
+        # Unconfirmed: which reason wins when a request parameter and a message both
+        # changed. The docs' unavailable row covers "a model/system/tools match where"
+        # a parameter differs, so the sim checks parameters before messages.
         if fp["params"] != prev["params"]:
             return {"cache_miss_reason": {"type": "unavailable"}}
         for i, h in enumerate(prev["messages"]):

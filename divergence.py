@@ -8,9 +8,20 @@ diagnostics on, log two consecutive requests of one conversation and
 compare them here. The first part that differs is where the cache stops
 matching. Like diagnostics, it compares hashes, so you can log
 fingerprint() instead of the prompts.
+
+It sees only the request body. A changed anthropic-beta header doesn't show,
+and neither does an entry that expired: two requests with the same
+fingerprint still miss if more than the TTL passed between them.
 """
 import hashlib
 import json
+
+# Request parameters the docs list as cache busters: the prompt caching page's
+# invalidation table (tool_choice, thinking, output_config.effort, speed) and
+# the diagnostics unavailable reason (also context_management and output_format).
+# Compared as sent: the docs treat an explicit default effort as omitted, and this doesn't.
+PARAMS = ("tool_choice", "thinking", "output_config", "output_format", "context_management", "speed")
+HEADER = ("model", "tools", "system", "params")  # the parts before the messages, in the order compared
 
 
 def _without_markers(value):
@@ -27,9 +38,21 @@ def _hash(value) -> str:
     return hashlib.sha256(json.dumps(_without_markers(value), default=str).encode()).hexdigest()[:16]
 
 
+def _header(request: dict) -> dict:
+    system = request.get("system") or []
+    if isinstance(system, str):
+        system = [{"type": "text", "text": system}]  # the same prompt as a one-block list
+    return {
+        "model": request.get("model"),
+        "tools": request.get("tools") or [],  # no tools and [] are the same request
+        "system": system,
+        "params": {key: request[key] for key in PARAMS if key in request},
+    }
+
+
 def fingerprint(request: dict) -> list[tuple[str, str]]:
-    """(part, hash) in prefix order: the model, the tools, the system prompt, then each message."""
-    parts = [(key, _hash(request.get(key))) for key in ("model", "tools", "system")]
+    """(part, hash) in prefix order: the model, tools, system prompt, and parameters, then each message."""
+    parts = [(part, _hash(value)) for part, value in _header(request).items()]
     return parts + [(f"messages[{i}]", _hash(m)) for i, m in enumerate(request.get("messages", []))]
 
 
@@ -44,5 +67,5 @@ def first_divergence(earlier, later) -> str | None:
         if x != y:
             return part
     if len(b) < len(a):
-        return f"messages[{len(b) - 3}]"  # later dropped messages from the end
+        return f"messages[{len(b) - len(HEADER)}]"  # later dropped messages from the end
     return None

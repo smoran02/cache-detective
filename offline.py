@@ -26,12 +26,21 @@ https://platform.claude.com/docs/en/build-with-claude/prompt-caching
   model-specific for the tools and system caches, and treat an explicit
   default effort as omitted. The sim treats thinking and output_config like
   tool_choice and compares them as sent. No lab request sets either.
+- Replaying an Opus 5.5 thinking block after anything before it changed is a 400.
+
+It also rejects, with the 400 the API would return, requests the lab could
+build by mistake: no messages, a text block whose text isn't a string, and a
+{"role": "system"} message that doesn't directly follow a user message or
+isn't followed by an assistant message (or the end).
+https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
 
 What it doesn't do: count tokens like the real tokenizer (it uses about 4
 characters per token, so every count here is simulated), call tools, write
 real replies, or model concurrent requests. Replies are canned text. When
 the last block is a breakpoint, input_tokens here is 0; the real API can
 report a few uncached tokens even then (the docs' diagnostics example shows 42).
+
+tests/test_simulator.py checks each rule above, one test per rule.
 """
 import hashlib
 import itertools
@@ -48,6 +57,16 @@ import config
 TTL_SECONDS = {"5m": 5 * 60, "1h": 60 * 60}
 LOOKBACK_POSITIONS = 20
 MAX_BREAKPOINTS = 4
+
+# Unconfirmed: whether a breakpoint inside the prefix a request reads counts
+# as a use that refreshes its own entry. The docs say each use refreshes an
+# entry ("a cache hit (and also a cache refresh!)"), and their mixed-TTL
+# billing names A as "the highest cache hit", which implies one request can
+# hit at more than one breakpoint. The sim reads it that way. The lab's
+# numbers rest on it: set this to False and the fix gets 84.4% and $0.0197,
+# Thursday 84.3% and $0.0199, so Friday is 2.7x Thursday instead of 3.1x, and
+# the reference fails 3 offline tests (README, "Where the docs are silent").
+REFRESH_BREAKPOINTS_INSIDE_THE_READ = True
 
 REPLIES = [
     "Thanks for reaching out. I've pulled up the details, and here is where things stand: "
@@ -110,6 +129,24 @@ class _Block:
     signature: str | None = None  # for thinking blocks
 
 
+def _check_messages(messages):
+    """Reject message lists the API would reject with a 400."""
+    if not messages:
+        raise SimulatedAPIError("(offline) messages: at least one message is required")
+    for i, message in enumerate(messages):
+        if message["role"] != "system":
+            continue
+        # A mid-conversation system message must directly follow a user turn and
+        # precede an assistant turn or end the array. (The docs also allow one after
+        # an assistant turn that ends in a server tool result; the sim has no server tools.)
+        # https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
+        after_user = i > 0 and messages[i - 1]["role"] == "user"
+        before_assistant = i == len(messages) - 1 or messages[i + 1]["role"] == "assistant"
+        if not (after_user and before_assistant):
+            raise SimulatedAPIError("(offline) a system message must directly follow a user message and come "
+                                    "before an assistant message or end the messages")
+
+
 def _flatten(tools, system, messages) -> list[_Block]:
     blocks = []
     for tool in tools or []:
@@ -137,7 +174,10 @@ def _flatten(tools, system, messages) -> list[_Block]:
 
 def _tokens(block: dict) -> int:
     if block.get("type") == "text":
-        return count_tokens(block.get("text", ""))
+        text = block.get("text", "")
+        if not isinstance(text, str):
+            raise SimulatedAPIError(f"(offline) a text block's text must be a string, not {type(text).__name__}")
+        return count_tokens(text)
     return count_tokens(_canon(block))
 
 
@@ -177,6 +217,10 @@ def _breakpoints(blocks: list[_Block], automatic: dict | None) -> list[tuple[int
     if len(bps) > MAX_BREAKPOINTS:
         raise SimulatedAPIError("(offline) at most 4 cache_control breakpoints per request")
     if automatic:
+        # Unconfirmed: the docs list two edge cases that overlap when the 4th explicit
+        # breakpoint is on the last block with the same TTL: automatic caching "is a
+        # no-op" there, and "if 4 explicit block-level breakpoints already exist, the
+        # API returns a 400 error". The sim checks the count first, so that's a 400.
         if len(bps) == MAX_BREAKPOINTS:
             raise SimulatedAPIError("(offline) 4 explicit breakpoints leave no slot for automatic caching")
         # The automatic breakpoint goes on the last cacheable block. Thinking
@@ -237,55 +281,20 @@ class _Engine:
         if tool_choice and tool_choice.get("type") in ("any", "tool"):
             raise SimulatedAPIError('(offline) forced tool use is not supported: use tool_choice "auto" or "none"')
 
+        _check_messages(messages)
         blocks = _flatten(tools, system, messages)
         messages_context = _canon([tool_choice, thinking, output_config])
         hashes = _prefix_hashes(model, blocks, messages_context)
-        positions = _positions(blocks)
         cum = list(itertools.accumulate(b.tokens for b in blocks))
         total = cum[-1] if cum else 0
         breakpoints = _breakpoints(blocks, cache_control)
         content_hashes = _prefix_hashes(model, blocks, "")  # content only, for thinking binding
         self._check_thinking_binding(model, blocks, content_hashes)
 
-        # Reads: from the last breakpoint back, the first live entry an earlier request wrote.
-        hit = None
-        for bp, _ in reversed(breakpoints):
-            i = bp
-            while i >= 0 and positions[bp] - positions[i] < LOOKBACK_POSITIONS:
-                entry = self.cache.get(hashes[i])
-                if entry and entry["expires"] >= now:
-                    hit = i
-                    break
-                i -= 1
-            if hit is not None:
-                break
+        hit = self._read(hashes, _positions(blocks), breakpoints, now)
         read = cum[hit] if hit is not None else 0
-        if hit is not None:
-            self._refresh(hashes[hit], now)
-
-        # Writes: at each breakpoint past the hit that meets the minimum length.
-        # Breakpoints inside the read prefix refresh their own entries.
-        # (Unconfirmed: the docs say each use refreshes an entry but don't say
-        # whether a matching earlier breakpoint counts as a use. The sim counts it.)
-        last_1h = last_5m = None
-        for bp, ttl in breakpoints:
-            if hit is not None and bp <= hit:
-                self._refresh(hashes[bp], now)
-                continue
-            if cum[bp] < config.MIN_CACHEABLE_TOKENS:
-                continue
-            self.cache[hashes[bp]] = {"ttl": ttl, "expires": now + TTL_SECONDS[ttl]}
-            if ttl == "1h":
-                last_1h = bp
-            else:
-                last_5m = bp
-        # Billing with mixed TTLs, named as the docs name it: A is the highest
-        # cache hit, B the highest 1h breakpoint after A, C the last breakpoint.
-        # Reads for A, 1h writes for B - A, 5m writes for C - B.
-        a = read
-        b = cum[last_1h] if last_1h is not None else a
-        c = cum[last_5m] if last_5m is not None else b
-        written_1h, written_5m = b - a, c - b
+        last_1h, last_5m = self._write(hashes, cum, breakpoints, hit, now)
+        written_1h, written_5m = _bill(cum, read, last_1h, last_5m)
         written = written_1h + written_5m
 
         self.count += 1
@@ -319,6 +328,44 @@ class _Engine:
             # The API stores a fingerprint only for requests that include the diagnostics object.
             self.fingerprints[msg_id] = fingerprint
         return BetaMessage.model_validate(payload)
+
+    def _read(self, hashes, positions, breakpoints, now) -> int | None:
+        """The block where the read ends, or None on a miss.
+
+        From the last breakpoint back, up to 20 lookback positions each, the
+        first live entry an earlier request wrote. Reading it refreshes it.
+        """
+        for bp, _ in reversed(breakpoints):
+            i = bp
+            while i >= 0 and positions[bp] - positions[i] < LOOKBACK_POSITIONS:
+                entry = self.cache.get(hashes[i])
+                if entry and entry["expires"] >= now:
+                    self._refresh(hashes[i], now)
+                    return i
+                i -= 1
+        return None
+
+    def _write(self, hashes, cum, breakpoints, hit, now) -> tuple[int | None, int | None]:
+        """Write an entry at each breakpoint past the read that meets the minimum length.
+
+        Returns the last 1h and the last 5m breakpoint written, for billing.
+        Breakpoints inside the read refresh their own entries (see
+        REFRESH_BREAKPOINTS_INSIDE_THE_READ).
+        """
+        last_1h = last_5m = None
+        for bp, ttl in breakpoints:
+            if hit is not None and bp <= hit:
+                if REFRESH_BREAKPOINTS_INSIDE_THE_READ:
+                    self._refresh(hashes[bp], now)
+                continue
+            if cum[bp] < config.MIN_CACHEABLE_TOKENS:
+                continue
+            self.cache[hashes[bp]] = {"ttl": ttl, "expires": now + TTL_SECONDS[ttl]}
+            if ttl == "1h":
+                last_1h = bp
+            else:
+                last_5m = bp
+        return last_1h, last_5m
 
     def _refresh(self, key: str, now: float):
         entry = self.cache.get(key)
@@ -388,6 +435,19 @@ class _Engine:
                 return _changed("messages_changed", sum(fp["message_tokens"][i:]))
         # No divergence. The sim never returns the pending state {"cache_miss_reason": null}.
         return None
+
+
+def _bill(cum: list[int], read: int, last_1h: int | None, last_5m: int | None) -> tuple[int, int]:
+    """(1h write tokens, 5m write tokens), with mixed TTLs named as the docs name them.
+
+    A is the highest cache hit, B the highest 1h breakpoint after A, C the last
+    breakpoint. Reads for A, 1h writes for B - A, 5m writes for C - B.
+    https://platform.claude.com/docs/en/build-with-claude/prompt-caching#mixing-different-ttls
+    """
+    a = read
+    b = cum[last_1h] if last_1h is not None else a
+    c = cum[last_5m] if last_5m is not None else b
+    return b - a, c - b
 
 
 def _changed(kind: str, missed: int) -> dict:

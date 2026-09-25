@@ -7,7 +7,8 @@ from support import HANDBOOK, make_request
 
 
 # ── Clue 1. The meter ─────────────────────────────────────────────────────
-def meter(usages: list) -> tuple[float, float]:
+def meter(usages: list, prices: dict | None = None) -> tuple[float, float]:
+    prices = prices or config.PRICES
     read = written = uncached = 0
     dollars = 0.0
     for u in usages:
@@ -17,11 +18,11 @@ def meter(usages: list) -> tuple[float, float]:
         w_1h = u.cache_creation.ephemeral_1h_input_tokens if u.cache_creation else 0
         read, written, uncached = read + r, written + w, uncached + u.input_tokens
         dollars += (
-            u.input_tokens * config.PRICES["input"]
-            + (w - w_1h) * config.PRICES["cache_write_5m"]
-            + w_1h * config.PRICES["cache_write_1h"]
-            + r * config.PRICES["cache_read"]
-            + u.output_tokens * config.PRICES["output"]
+            u.input_tokens * prices["input"]
+            + (w - w_1h) * prices["cache_write_5m"]
+            + w_1h * prices["cache_write_1h"]
+            + r * prices["cache_read"]
+            + u.output_tokens * prices["output"]
         )
     total = read + written + uncached
     return (read / total if total else 0.0), dollars
@@ -45,7 +46,9 @@ def build_request(history: list, question: str, now: str) -> dict:
 
 # ── Clue 4. Place the breakpoint ──────────────────────────────────────────
 def place_breakpoint(request: dict) -> dict:
-    request["system"] = [
-        {"type": "text", "text": request["system"], "cache_control": {"type": "ephemeral"}}
-    ]
+    # The system prompt is the last block every request shares. A string becomes one text block.
+    system = request["system"]
+    blocks = [{"type": "text", "text": system}] if isinstance(system, str) else [dict(b) for b in system]
+    blocks[-1]["cache_control"] = {"type": "ephemeral"}
+    request["system"] = blocks
     return request

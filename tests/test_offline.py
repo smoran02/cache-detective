@@ -2,7 +2,8 @@
 Offline end-to-end test: the whole lab on the simulated client, with no API
 key and no network. It imports the 4 functions from the module named by
 LAB_SOLUTION (default: starter), replays the weekend through Friday's code
-and through the fix, and checks the fixed hit rate and $ per conversation.
+and through the fix, and checks the fix against config.BAR, the same bar
+app.py uses before it says "Case closed".
 
     .venv/bin/python -m pytest -q tests                           # your starter.py
     .venv/bin/python -m pytest -q tests -k clue_1                 # one clue (clue_1 to clue_4)
@@ -12,6 +13,7 @@ import copy
 import importlib
 import os
 import sys
+import types
 
 import pytest
 from anthropic.types import Usage
@@ -24,15 +26,11 @@ from truth import truth
 
 solution = importlib.import_module(os.environ.get("LAB_SOLUTION", "starter"))
 
-# What the fix should reach on the weekend traffic. The reference gets a
-# 90.8% hit rate and $0.0171 per conversation, about a third of Friday's
-# $0.0539. The bounds leave room for small differences, like how you word
-# the time in the user message. They're calibrated to the offline client,
-# which counts an earlier breakpoint inside the read prefix as a use that
-# refreshes its entry (README, "Where the docs are silent").
-FIXED_HIT_RATE_AT_LEAST = 0.88
-FIXED_DOLLARS_PER_CONVERSATION_AT_MOST = 0.0190
-FRIDAY_OVER_FIXED_AT_LEAST = 2.8
+# config.BAR is calibrated to the offline client, which counts an earlier
+# breakpoint inside the read prefix as a use that refreshes its entry
+# (README, "Where the docs are silent").
+BAR = config.BAR
+offline_only = pytest.mark.skipif(config.PROVIDER != "offline", reason="the readout tests run offline only")
 
 
 def text_of(content) -> str:
@@ -82,6 +80,10 @@ def test_clue_1_meter_reads_and_prices_the_usage_fields():
     assert hit_rate == pytest.approx(1000 / 2150)
     # 150 uncached at $4/MTok + 1,000 written at $5 + 1,000 read at $0.20 + 110 output at $20.
     assert dollars == pytest.approx(0.0006 + 0.005 + 0.0002 + 0.0022)
+    # Your own prices (Take it to your app): double every price, double the bill.
+    doubled = {name: 2 * price for name, price in config.PRICES.items()}
+    assert solution.meter(usages, doubled)[1] == pytest.approx(2 * dollars), "price with the prices argument"
+    assert solution.meter([]) == (0.0, 0.0), "no usages: a 0.0 hit rate and $0"
 
 
 def test_clue_2_diagnostics_names_the_culprit():
@@ -114,15 +116,20 @@ def test_clue_3_system_prompt_is_stable_and_the_time_moved():
         {"role": "assistant", "content": "Yes, from the Bend store."},
     ]
     before = copy.deepcopy(history)
-    morning = solution.build_request(history, "How much for five days?", "2026-09-26T09:00:00-07:00")
-    night = solution.build_request(history, "How much for five days?", "2026-09-26T23:30:00-07:00")
+    # Morning, night, and just past midnight: a date left in the system prompt still changes it once a day.
+    times = ["2026-09-26T09:00:00-07:00", "2026-09-26T23:30:00-07:00", "2026-09-27T00:30:00-07:00"]
+    requests = [solution.build_request(history, "How much for five days?", now) for now in times]
+    morning = requests[0]
     assert history == before, "don't change history: build a new list, like history + [message]"
     assert morning["messages"][: len(history)] == history, "send the history unchanged, then the new message"
-    assert system_text(morning) == system_text(night), "the system prompt must not change with the time"
+    assert len({system_text(r) for r in requests}) == 1, "the system prompt must not change with the time, or the date"
     assert HANDBOOK in system_text(morning), "keep the handbook as the system prompt"
-    assert new_text(morning, history) != new_text(night, history), "Wren still needs the time: put `now` in the new user message"
-    assert morning["messages"][-1]["role"] == "user", "end on the customer's new message"
-    assert "How much for five days?" in text_of(morning["messages"][-1]["content"])
+    assert len({new_text(r, history) for r in requests}) == len(times), "Wren still needs the time: put `now` in the new user message"
+    new = morning["messages"][len(history):]
+    assert new[0]["role"] == "user" and "How much for five days?" in text_of(new[0]["content"]), (
+        "the customer's new message comes right after the history")
+    # On Opus 5.5 a {"role": "system"} message can follow the new user message (one before it is a 400).
+    assert all(m["role"] == "system" for m in new[1:]), "end on the customer's new message"
 
 
 def test_clue_4_new_conversations_read_the_handbook_from_the_cache():
@@ -131,7 +138,7 @@ def test_clue_4_new_conversations_read_the_handbook_from_the_cache():
     reading = [t for t in first if (t.usage.cache_read_input_tokens or 0) > 0]
     # Most first turns read the handbook another conversation wrote. The rest
     # come after a quiet stretch longer than the 5-minute TTL.
-    assert len(reading) / len(first) >= 0.75
+    assert len(reading) / len(first) >= BAR["first_turns_reading"]
 
 
 def test_clue_4_follow_up_turns_still_read_the_conversation():
@@ -141,7 +148,7 @@ def test_clue_4_follow_up_turns_still_read_the_conversation():
                     if t.number == 1 and t.usage.cache_read_input_tokens), default=0)
     later = [t for t in turns if t.number > 1]
     past_handbook = [t for t in later if (t.usage.cache_read_input_tokens or 0) > handbook]
-    assert len(past_handbook) / len(later) >= 0.9, (
+    assert len(past_handbook) / len(later) >= BAR["follow_ups_past_handbook"], (
         "follow-up turns read only the handbook, and pay full price for the conversation so far: "
         "keep the automatic breakpoint (the top-level cache_control) as well as yours"
     )
@@ -156,9 +163,9 @@ def test_the_weekend_before_and_after_the_fix():
     fixed_hit, fixed_dollars = truth(t.usage for t in fixed)
 
     assert friday_hit < 0.01, "Friday's code should almost never read the cache"
-    assert fixed_hit >= FIXED_HIT_RATE_AT_LEAST, f"fixed hit rate {fixed_hit:.1%}"
-    assert fixed_dollars / n <= FIXED_DOLLARS_PER_CONVERSATION_AT_MOST, f"fixed ${fixed_dollars / n:.4f} per conversation"
-    assert friday_dollars / fixed_dollars >= FRIDAY_OVER_FIXED_AT_LEAST, "the fix should cut the bill to about a third"
+    assert fixed_hit >= BAR["hit_rate"], f"fixed hit rate {fixed_hit:.1%}"
+    assert fixed_dollars / n <= BAR["dollars_per_conversation"], f"fixed ${fixed_dollars / n:.4f} per conversation"
+    assert friday_dollars / fixed_dollars >= BAR["friday_over_fixed"], "the fix should cut the bill to about a third"
 
     # After the fix, diagnostics finds nothing changing between turns.
     assert not [t for t in fixed if t.reason is not None]
@@ -170,14 +177,45 @@ def test_the_weekend_before_and_after_the_fix():
     if not any(t.usage.cache_creation and t.usage.cache_creation.ephemeral_1h_input_tokens for t in fixed):
         assert dollars == pytest.approx(fixed_dollars, rel=1e-6)
 
+    # A fix that clears this test's bar clears the readout's too, so app.py says "Case closed".
+    import app
+    assert not app.shortfalls((friday_hit, friday_dollars), (fixed_hit, fixed_dollars), fixed, n,
+                              live=False, diagnosed=True)
 
-@pytest.mark.skipif(config.PROVIDER != "offline", reason="the readout test runs offline only")
-def test_the_readout_runs(capsys, monkeypatch):
+
+def readout(monkeypatch, capsys, **swap) -> str:
+    """What app.py prints for your solution, with any of its 4 functions swapped out."""
     import app
 
-    monkeypatch.setenv("LAB_SOLUTION", solution.__name__)
+    module = types.ModuleType("readout_under_test")
+    for name in ("meter", "send_with_diagnostics", "build_request", "place_breakpoint"):
+        setattr(module, name, swap.get(name, getattr(solution, name)))
+    monkeypatch.setitem(sys.modules, module.__name__, module)
+    monkeypatch.setenv("LAB_SOLUTION", module.__name__)
     monkeypatch.setattr(sys, "argv", ["app.py"])
     app.main()
-    out = capsys.readouterr().out
+    return capsys.readouterr().out
+
+
+@offline_only
+def test_the_readout_runs(capsys, monkeypatch):
+    out = readout(monkeypatch, capsys)
     assert "CACHE DETECTIVE" in out
-    assert "Next:" in out or "Case closed" in out, "the readout should name the next function or close the case"
+    assert any(s in out for s in ("Next:", "Not yet", "Case closed")), (
+        "the readout should name the next function, say what's still wrong, or close the case")
+
+
+def no_automatic_breakpoint(request):
+    request = solution.place_breakpoint(request)
+    return {key: value for key, value in request.items() if key != "cache_control"}
+
+
+@offline_only
+@pytest.mark.parametrize("wrong_fix", [
+    {"place_breakpoint": lambda request: request},  # no breakpoint: first turns never read
+    {"build_request": friday_request},  # the time still in the system prompt
+    {"place_breakpoint": no_automatic_breakpoint},  # follow-up turns read only the handbook
+], ids=["no breakpoint", "time in the system prompt", "no automatic breakpoint"])
+def test_the_readout_closes_the_case_only_on_a_real_fix(capsys, monkeypatch, wrong_fix):
+    # With your other functions, each wrong fix must fall short of config.BAR on screen too.
+    assert "Case closed" not in readout(monkeypatch, capsys, **wrong_fix)

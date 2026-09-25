@@ -22,6 +22,7 @@ def make_client(provider: str = config.PROVIDER):
         # API; its client is AnthropicBedrockMantle. (AnthropicBedrock is the
         # legacy InvokeModel client for Opus 4.6 and earlier.) Credentials come
         # from constructor args, then AWS_* env vars, then the AWS config chain.
+        # The region comes from config.AWS_REGION.
         # https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock
         # Unconfirmed: no doc states the usage field names in Bedrock Messages API
         # responses. The lab reads the Claude API names (cache_read_input_tokens and

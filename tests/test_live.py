@@ -8,6 +8,7 @@ the fix each replay the first config.LIVE_CONVERSATIONS conversations.
 """
 import importlib
 import os
+from collections import Counter
 
 import pytest
 
@@ -46,9 +47,14 @@ def test_live_weekend_before_and_after_the_fix():
     print(f"\n{config.PROVIDER} {config.MODEL}: {n} conversations, {len(fixed)} requests per run")
     print(f"Friday: hit rate {friday_hit:.1%}, ${friday_dollars / n:.4f} per conversation")
     print(f"Fixed:  hit rate {fixed_hit:.1%}, ${fixed_dollars / n:.4f} per conversation")
+    if has_diagnostics():
+        # FACTS Unconfirmed 14: whether reply text sent back without its thinking block
+        # shows up as messages_changed. None means no change; "pending" means check the next turn.
+        reasons = Counter(getattr(t.reason, "type", t.reason) for t in fixed if t.number > 1)
+        print(f"Fixed, follow-up turns' cache_miss_reason: {dict(reasons)}")
 
     assert friday_hit < 0.05, "Friday's code shouldn't read the cache"
-    assert fixed_hit >= 0.70, (
+    assert fixed_hit >= config.LIVE_HIT_RATE_AT_LEAST, (
         "the fix should read most input from the cache. On Bedrock, a 0% hit rate can also mean "
         "the response's usage fields have different names: print response.usage to check."
     )

@@ -13,4 +13,5 @@ def truth(usages) -> tuple[float, float]:
         dollars += (u.input_tokens * config.PRICES["input"] + (w - w_1h) * config.PRICES["cache_write_5m"]
                     + w_1h * config.PRICES["cache_write_1h"] + r * config.PRICES["cache_read"]
                     + u.output_tokens * config.PRICES["output"])
-    return read / (read + written + uncached), dollars
+    total = read + written + uncached
+    return (read / total if total else 0.0), dollars

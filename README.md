@@ -34,10 +34,10 @@ them in one at a time and run `app.py` after each.
 
 | # | Function | Clue | API surface | Lines |
 |---|---|---|---|---|
-| 1 | `meter()` | hit rate and $ per conversation | `response.usage` cache fields | ~12 |
+| 1 | `meter()` | hit rate and $ per conversation | `response.usage` cache fields | ~14 |
 | 2 | `send_with_diagnostics()` | why each request missed | `client.beta.messages.create(..., diagnostics=...)` | 3 |
 | 3 | `build_request()` | move the cache buster | the `system` prompt and the new `user` message | 2 |
-| 4 | `place_breakpoint()` | place the breakpoint, verify the drop | `cache_control` on a `system` block | 3 |
+| 4 | `place_breakpoint()` | place the breakpoint, verify the drop | `cache_control` on a `system` block | 4 |
 
 That's about 20 lines. Everything else (the handbook, Friday's request
 builder, the replay loop, the readout, the offline client) is provided.
@@ -156,8 +156,9 @@ On this traffic: 97.8% hit rate, $0.0143 per conversation.
 tool definitions invalidates the tools, system, and messages caches. In your
 `build_request()`, add a `tools` list of two tool definitions, then shuffle
 their order on each request with `random.sample(tools, 2)`. Offline,
-diagnostics reports `tools_changed` on 192 requests and the hit rate falls
-to 77%. The fix is a fixed order and deterministic serialization. (Offline
+diagnostics reports `tools_changed` on about 200 requests (the order is
+random, so the count varies from run to run) and the hit rate falls to about
+77%. The fix is a fixed order and deterministic serialization. (Offline
 only: the simulated client never calls tools, and the replay loop doesn't run
 a tool loop.)
 
@@ -165,8 +166,8 @@ a tool loop.)
 tokens (`config.MIN_CACHEABLE_TOKENS`); some other models need 1,024 to
 4,096. Shorter prefixes run uncached with no error, and both cache fields
 come back 0. Try `HANDBOOK[:1500]` (375 simulated tokens) as the system
-prompt: a conversation's first two turns don't cache at all, and caching
-starts once the conversation grows the prefix past 512 (turn 3 in `c001`).
+prompt: first turns never cache, and caching starts once the conversation
+grows the prefix past 512 (turn 3 in `c001`, turn 2 in 10 conversations).
 
 ## Teaching this
 
@@ -182,7 +183,8 @@ TODO
   and `input_tokens` split the input three ways, and the bill follows the split.
 - **Cache diagnostics**: opt in per request, thread `previous_message_id`
   through the conversation, and read `cache_miss_reason.type`. `None` means no
-  change, or nothing to compare.
+  change, nothing to compare, or (live only) a comparison that hadn't finished
+  yet, so check the next turn.
 - **Prefix order and what invalidates it**: tools, then system, then
   messages. A change anywhere invalidates everything after it.
 - **Breakpoints**: writes happen only at a breakpoint; reads look back for

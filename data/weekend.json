@@ -1,0 +1,4170 @@
+{
+ "weekend": "2026-09-26 to 2026-09-27",
+ "timezone": "Pacific (UTC-07:00)",
+ "conversations": [
+  {
+   "id": "c001",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T08:09:20-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-58419."
+    },
+    {
+     "at": "2026-09-26T08:11:24-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T08:12:11-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-26T08:14:02-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c002",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T08:35:39-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T08:36:55-07:00",
+     "text": "What if I'm in Trail Club?"
+    }
+   ]
+  },
+  {
+   "id": "c003",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T08:37:49-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-75561."
+    },
+    {
+     "at": "2026-09-26T08:40:09-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T08:41:58-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c004",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T08:38:22-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T08:39:50-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T08:42:19-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c005",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T08:53:07-07:00",
+     "text": "Hi, where is my order KO-71403? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T08:53:59-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c006",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T09:17:59-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-43898."
+    },
+    {
+     "at": "2026-09-26T09:19:54-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T09:21:38-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c007",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T09:23:04-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T09:24:59-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-26T09:26:02-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c008",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T09:30:25-07:00",
+     "text": "My package for order KO-51439 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T09:32:50-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c009",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T09:33:35-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T09:35:10-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T09:36:28-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c010",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T09:37:42-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-17047."
+    }
+   ]
+  },
+  {
+   "id": "c011",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T09:47:19-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T09:49:22-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T09:50:59-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c012",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T09:48:33-07:00",
+     "text": "Hi, where is my order KO-83583? Tracking still says label created."
+    }
+   ]
+  },
+  {
+   "id": "c013",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T09:50:58-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T09:53:05-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T09:54:58-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c014",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T09:54:49-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    }
+   ]
+  },
+  {
+   "id": "c015",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T10:10:06-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T10:11:12-07:00",
+     "text": "What if I'm in Trail Club?"
+    }
+   ]
+  },
+  {
+   "id": "c016",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T10:11:22-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-133."
+    },
+    {
+     "at": "2026-09-26T10:13:51-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-26T10:15:04-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c017",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T10:17:14-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-114."
+    },
+    {
+     "at": "2026-09-26T10:19:17-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-26T10:20:18-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c018",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T10:21:14-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-26T10:22:38-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    },
+    {
+     "at": "2026-09-26T10:24:53-07:00",
+     "text": "Can you send it to a different email instead?"
+    }
+   ]
+  },
+  {
+   "id": "c019",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T10:22:13-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-88959."
+    },
+    {
+     "at": "2026-09-26T10:23:27-07:00",
+     "text": "Is the exchange free?"
+    }
+   ]
+  },
+  {
+   "id": "c020",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T10:27:50-07:00",
+     "text": "My package for order KO-61572 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T10:30:16-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-26T10:31:15-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-26T10:32:02-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c021",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T10:33:48-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T10:34:53-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T10:36:28-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c022",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T10:34:51-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T10:36:02-07:00",
+     "text": "It's order KO-32755."
+    },
+    {
+     "at": "2026-09-26T10:37:02-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c023",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T10:37:11-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T10:39:34-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T10:40:46-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c024",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T10:38:42-07:00",
+     "text": "Hi, where is my order KO-85969? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T10:40:00-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T10:42:11-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-26T10:43:18-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c025",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T10:42:29-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T10:43:30-07:00",
+     "text": "Who pays the duties?"
+    }
+   ]
+  },
+  {
+   "id": "c026",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T10:47:46-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T10:48:47-07:00",
+     "text": "It's order KO-37448."
+    },
+    {
+     "at": "2026-09-26T10:50:39-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c027",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T10:48:35-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T10:49:24-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c028",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T10:52:23-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T10:53:50-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    }
+   ]
+  },
+  {
+   "id": "c029",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T11:09:25-07:00",
+     "text": "I placed order KO-66867 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T11:10:41-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-26T11:12:15-07:00",
+     "text": "How much extra is that?"
+    }
+   ]
+  },
+  {
+   "id": "c030",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T11:09:34-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-26T11:11:59-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    }
+   ]
+  },
+  {
+   "id": "c031",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T11:19:42-07:00",
+     "text": "Do you ship to Canada?"
+    }
+   ]
+  },
+  {
+   "id": "c032",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T11:25:17-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-78329."
+    },
+    {
+     "at": "2026-09-26T11:26:29-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T11:28:58-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-26T11:30:37-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c033",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T11:29:39-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T11:30:44-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-26T11:32:16-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c034",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T11:33:33-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T11:34:45-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T11:37:07-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c035",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T11:34:07-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T11:36:05-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T11:36:51-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c036",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T11:34:32-07:00",
+     "text": "I placed order KO-22491 about 20 minutes ago. Can I still change it?"
+    }
+   ]
+  },
+  {
+   "id": "c037",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T11:38:55-07:00",
+     "text": "Hi, where is my order KO-91293? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T11:40:32-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T11:42:56-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-26T11:44:54-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c038",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T11:40:56-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T11:42:45-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T11:44:50-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c039",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T11:41:26-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T11:43:18-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T11:44:43-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c040",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T11:41:37-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T11:43:32-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T11:44:45-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c041",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T11:42:55-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T11:44:45-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T11:47:01-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c042",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T11:47:26-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T11:49:21-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-26T11:50:38-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c043",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T11:49:26-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T11:51:21-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T11:52:50-07:00",
+     "text": "Where do I send the photos?"
+    },
+    {
+     "at": "2026-09-26T11:54:59-07:00",
+     "text": "How long do repairs usually take?"
+    }
+   ]
+  },
+  {
+   "id": "c044",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T11:50:56-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T11:52:45-07:00",
+     "text": "It's order KO-83682."
+    },
+    {
+     "at": "2026-09-26T11:53:50-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c045",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T11:58:39-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T12:00:23-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c046",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T12:04:02-07:00",
+     "text": "My package for order KO-35040 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T12:06:11-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-26T12:08:00-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-26T12:10:04-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c047",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T12:05:27-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-67537."
+    },
+    {
+     "at": "2026-09-26T12:06:37-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T12:08:53-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c048",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T12:15:52-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T12:16:37-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T12:18:09-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    },
+    {
+     "at": "2026-09-26T12:20:08-07:00",
+     "text": "What about picking it up at the Bend store instead?"
+    }
+   ]
+  },
+  {
+   "id": "c049",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T12:19:04-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-29676."
+    },
+    {
+     "at": "2026-09-26T12:20:00-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T12:22:08-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-26T12:23:17-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c050",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T12:20:09-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T12:21:05-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T12:22:51-07:00",
+     "text": "Where do I send the photos?"
+    },
+    {
+     "at": "2026-09-26T12:24:07-07:00",
+     "text": "How long do repairs usually take?"
+    }
+   ]
+  },
+  {
+   "id": "c051",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T12:22:41-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-32398."
+    },
+    {
+     "at": "2026-09-26T12:24:29-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T12:26:37-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-26T12:28:01-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c052",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T12:23:50-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T12:25:41-07:00",
+     "text": "It's order KO-16733."
+    }
+   ]
+  },
+  {
+   "id": "c053",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T12:27:50-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T12:28:45-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T12:29:49-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c054",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T12:28:14-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T12:30:14-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T12:31:09-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c055",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T12:32:47-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T12:34:30-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T12:35:29-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c056",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T12:33:10-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T12:35:33-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T12:36:19-07:00",
+     "text": "How do I get a return label?"
+    },
+    {
+     "at": "2026-09-26T12:38:10-07:00",
+     "text": "How long until the refund shows up?"
+    }
+   ]
+  },
+  {
+   "id": "c057",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T12:35:36-07:00",
+     "text": "Hi, where is my order KO-53116? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T12:36:24-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T12:38:03-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c058",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T12:41:51-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T12:42:51-07:00",
+     "text": "It's order KO-14098."
+    }
+   ]
+  },
+  {
+   "id": "c059",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T12:48:17-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T12:50:01-07:00",
+     "text": "What if I'm in Trail Club?"
+    }
+   ]
+  },
+  {
+   "id": "c060",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T12:49:12-07:00",
+     "text": "I placed order KO-20303 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T12:50:40-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-26T12:52:39-07:00",
+     "text": "How much extra is that?"
+    }
+   ]
+  },
+  {
+   "id": "c061",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T12:51:02-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T12:53:25-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T12:54:12-07:00",
+     "text": "How do I get a return label?"
+    },
+    {
+     "at": "2026-09-26T12:55:27-07:00",
+     "text": "How long until the refund shows up?"
+    }
+   ]
+  },
+  {
+   "id": "c062",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T12:52:07-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T12:54:20-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T12:55:29-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c063",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T12:53:05-07:00",
+     "text": "Hi, where is my order KO-63983? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T12:54:50-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c064",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T12:54:07-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-201."
+    }
+   ]
+  },
+  {
+   "id": "c065",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T13:01:02-07:00",
+     "text": "I placed order KO-49982 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T13:03:30-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    }
+   ]
+  },
+  {
+   "id": "c066",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T13:05:14-07:00",
+     "text": "I placed order KO-44733 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T13:07:44-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-26T13:09:56-07:00",
+     "text": "How much extra is that?"
+    },
+    {
+     "at": "2026-09-26T13:11:11-07:00",
+     "text": "Perfect, please do it."
+    }
+   ]
+  },
+  {
+   "id": "c067",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T13:06:40-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-26T13:08:46-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    },
+    {
+     "at": "2026-09-26T13:10:40-07:00",
+     "text": "Can you send it to a different email instead?"
+    }
+   ]
+  },
+  {
+   "id": "c068",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T13:08:19-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T13:09:07-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c069",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T13:09:31-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T13:11:48-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T13:13:59-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c070",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T13:11:22-07:00",
+     "text": "I placed order KO-35183 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T13:13:50-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-26T13:15:41-07:00",
+     "text": "How much extra is that?"
+    }
+   ]
+  },
+  {
+   "id": "c071",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T13:12:41-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-282."
+    },
+    {
+     "at": "2026-09-26T13:13:52-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-26T13:14:51-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c072",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T13:22:17-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-138."
+    },
+    {
+     "at": "2026-09-26T13:23:12-07:00",
+     "text": "How do I get the replacement?"
+    }
+   ]
+  },
+  {
+   "id": "c073",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T13:25:42-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-35788."
+    },
+    {
+     "at": "2026-09-26T13:26:57-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T13:27:45-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c074",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T13:25:44-07:00",
+     "text": "Hi, where is my order KO-71408? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T13:28:09-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c075",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T13:28:26-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T13:29:41-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-26T13:30:32-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c076",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T13:33:27-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-45323."
+    },
+    {
+     "at": "2026-09-26T13:35:23-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T13:37:04-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c077",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T13:40:25-07:00",
+     "text": "My package for order KO-80003 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T13:41:13-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c078",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T13:45:33-07:00",
+     "text": "My package for order KO-45415 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T13:46:53-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-26T13:48:40-07:00",
+     "text": "Can someone call me about this?"
+    }
+   ]
+  },
+  {
+   "id": "c079",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T13:45:51-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T13:47:33-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-26T13:48:24-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c080",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T13:49:04-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T13:50:42-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T13:51:37-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c081",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T13:49:21-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-26T13:51:45-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    }
+   ]
+  },
+  {
+   "id": "c082",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T13:53:03-07:00",
+     "text": "Hi, where is my order KO-95879? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T13:55:11-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T13:57:20-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-26T13:59:50-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c083",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T14:01:32-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    }
+   ]
+  },
+  {
+   "id": "c084",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T14:02:55-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-12834."
+    }
+   ]
+  },
+  {
+   "id": "c085",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T14:06:02-07:00",
+     "text": "Hi, where is my order KO-84561? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T14:07:50-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c086",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T14:11:36-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T14:12:24-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T14:13:12-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c087",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T14:16:06-07:00",
+     "text": "My package for order KO-60206 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T14:17:15-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c088",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T14:18:20-07:00",
+     "text": "Hi, where is my order KO-84374? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T14:20:34-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c089",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T14:20:59-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-50579."
+    },
+    {
+     "at": "2026-09-26T14:23:11-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T14:25:01-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-26T14:26:48-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c090",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T14:26:33-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T14:28:38-07:00",
+     "text": "Who pays the duties?"
+    }
+   ]
+  },
+  {
+   "id": "c091",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T14:27:22-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T14:28:49-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    }
+   ]
+  },
+  {
+   "id": "c092",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T14:27:23-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    }
+   ]
+  },
+  {
+   "id": "c093",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-26T14:28:02-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-26T14:30:10-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-26T14:32:25-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c094",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T14:28:51-07:00",
+     "text": "Hi, where is my order KO-15554? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T14:31:05-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T14:32:52-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-26T14:35:01-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c095",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T14:31:30-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T14:32:36-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c096",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T14:41:25-07:00",
+     "text": "I placed order KO-25121 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T14:42:27-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    }
+   ]
+  },
+  {
+   "id": "c097",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T14:45:03-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-297."
+    },
+    {
+     "at": "2026-09-26T14:46:27-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-26T14:48:49-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c098",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T14:50:34-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T14:51:36-07:00",
+     "text": "It's order KO-17282."
+    },
+    {
+     "at": "2026-09-26T14:52:23-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c099",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T14:53:38-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T14:55:05-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T14:56:05-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c100",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T14:54:07-07:00",
+     "text": "My package for order KO-72746 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T14:55:55-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c101",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T14:56:38-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T14:57:24-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T14:59:26-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c102",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T14:56:49-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T14:58:56-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T14:59:50-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c103",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T15:00:29-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T15:02:06-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T15:04:19-07:00",
+     "text": "How do I get a return label?"
+    },
+    {
+     "at": "2026-09-26T15:05:21-07:00",
+     "text": "How long until the refund shows up?"
+    }
+   ]
+  },
+  {
+   "id": "c104",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T15:01:44-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T15:03:45-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    }
+   ]
+  },
+  {
+   "id": "c105",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T15:02:11-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T15:04:05-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T15:05:37-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c106",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T15:03:51-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T15:05:55-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T15:06:45-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c107",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T15:03:52-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-74478."
+    },
+    {
+     "at": "2026-09-26T15:05:34-07:00",
+     "text": "Is the exchange free?"
+    }
+   ]
+  },
+  {
+   "id": "c108",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T15:04:43-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T15:06:32-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    }
+   ]
+  },
+  {
+   "id": "c109",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-26T15:06:39-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-160."
+    },
+    {
+     "at": "2026-09-26T15:08:26-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-26T15:10:30-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c110",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T15:13:30-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T15:15:36-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T15:16:37-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c111",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T15:14:57-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-26T15:15:55-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    }
+   ]
+  },
+  {
+   "id": "c112",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T15:15:30-07:00",
+     "text": "Hi, where is my order KO-64306? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T15:17:44-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T15:19:05-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c113",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T15:25:35-07:00",
+     "text": "I placed order KO-88543 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T15:27:55-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-26T15:29:33-07:00",
+     "text": "How much extra is that?"
+    }
+   ]
+  },
+  {
+   "id": "c114",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T15:34:37-07:00",
+     "text": "Hi, where is my order KO-59273? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T15:36:51-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T15:39:20-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c115",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T15:42:55-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T15:44:32-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T15:45:46-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c116",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T15:44:46-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T15:45:34-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T15:46:22-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c117",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T15:50:41-07:00",
+     "text": "My package for order KO-56861 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T15:52:27-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-26T15:54:35-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-26T15:56:34-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c118",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T15:54:39-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T15:55:55-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-26T15:58:14-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c119",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T15:58:50-07:00",
+     "text": "My package for order KO-11380 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T16:01:01-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c120",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T16:14:42-07:00",
+     "text": "My package for order KO-36426 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T16:16:20-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c121",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T16:34:41-07:00",
+     "text": "Do you ship to Canada?"
+    }
+   ]
+  },
+  {
+   "id": "c122",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T16:36:41-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T16:38:26-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-26T16:40:17-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c123",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T16:42:18-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-18849."
+    },
+    {
+     "at": "2026-09-26T16:43:54-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T16:45:59-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-26T16:47:53-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c124",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T16:58:47-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-83597."
+    }
+   ]
+  },
+  {
+   "id": "c125",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-26T17:03:28-07:00",
+     "text": "I placed order KO-90562 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-26T17:05:02-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-26T17:06:17-07:00",
+     "text": "How much extra is that?"
+    },
+    {
+     "at": "2026-09-26T17:07:54-07:00",
+     "text": "Perfect, please do it."
+    }
+   ]
+  },
+  {
+   "id": "c126",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T17:12:54-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T17:14:23-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c127",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-26T17:14:57-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-26T17:15:59-07:00",
+     "text": "Who pays the duties?"
+    }
+   ]
+  },
+  {
+   "id": "c128",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T17:21:14-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T17:23:26-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T17:25:07-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c129",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T17:27:29-07:00",
+     "text": "Hi, where is my order KO-91041? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T17:28:53-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c130",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-26T17:53:39-07:00",
+     "text": "Hi, where is my order KO-61258? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-26T17:55:54-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-26T17:57:52-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-26T18:00:15-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c131",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-26T17:57:27-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-26T17:59:12-07:00",
+     "text": "What if I'm in Trail Club?"
+    }
+   ]
+  },
+  {
+   "id": "c132",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-26T17:58:00-07:00",
+     "text": "My package for order KO-96585 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-26T17:58:49-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c133",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-26T18:07:39-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-26T18:09:38-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-26T18:10:54-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    },
+    {
+     "at": "2026-09-26T18:12:18-07:00",
+     "text": "What about picking it up at the Bend store instead?"
+    }
+   ]
+  },
+  {
+   "id": "c134",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T18:09:36-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-26T18:11:35-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    },
+    {
+     "at": "2026-09-26T18:12:42-07:00",
+     "text": "Can you send it to a different email instead?"
+    }
+   ]
+  },
+  {
+   "id": "c135",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-26T18:41:22-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    }
+   ]
+  },
+  {
+   "id": "c136",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T19:06:33-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T19:07:24-07:00",
+     "text": "It's order KO-14813."
+    },
+    {
+     "at": "2026-09-26T19:08:51-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c137",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-26T19:31:37-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-26T19:33:06-07:00",
+     "text": "It's order KO-16829."
+    },
+    {
+     "at": "2026-09-26T19:33:56-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c138",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-26T19:40:31-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-97794."
+    },
+    {
+     "at": "2026-09-26T19:41:39-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-26T19:43:09-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c139",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T19:51:26-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T19:53:39-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T19:55:56-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c140",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-26T19:52:00-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-26T19:53:10-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-26T19:55:34-07:00",
+     "text": "Where do I send the photos?"
+    }
+   ]
+  },
+  {
+   "id": "c141",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T09:19:49-07:00",
+     "text": "My package for order KO-53958 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T09:20:47-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T09:23:01-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-27T09:23:51-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c142",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T09:27:28-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    }
+   ]
+  },
+  {
+   "id": "c143",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T09:29:26-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T09:30:45-07:00",
+     "text": "It's order KO-95472."
+    },
+    {
+     "at": "2026-09-27T09:32:33-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c144",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T09:41:17-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T09:42:02-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-27T09:44:17-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c145",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-27T09:41:34-07:00",
+     "text": "I placed order KO-36305 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-27T09:42:21-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-27T09:44:34-07:00",
+     "text": "How much extra is that?"
+    }
+   ]
+  },
+  {
+   "id": "c146",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-27T09:48:54-07:00",
+     "text": "I placed order KO-13816 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-27T09:51:02-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    }
+   ]
+  },
+  {
+   "id": "c147",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T09:52:21-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    }
+   ]
+  },
+  {
+   "id": "c148",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T10:01:25-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-27T10:02:15-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    },
+    {
+     "at": "2026-09-27T10:03:46-07:00",
+     "text": "Can you send it to a different email instead?"
+    }
+   ]
+  },
+  {
+   "id": "c149",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T10:04:49-07:00",
+     "text": "Hi, where is my order KO-49396? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T10:06:25-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T10:08:27-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-27T10:09:45-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c150",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T10:07:00-07:00",
+     "text": "Hi, where is my order KO-80227? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T10:07:58-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c151",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T10:12:08-07:00",
+     "text": "Hi, where is my order KO-73330? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T10:13:25-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T10:15:05-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-27T10:16:26-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c152",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T10:16:17-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-68693."
+    },
+    {
+     "at": "2026-09-27T10:18:03-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-27T10:20:22-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c153",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T10:16:26-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-199."
+    },
+    {
+     "at": "2026-09-27T10:17:52-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-27T10:19:12-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c154",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T10:18:59-07:00",
+     "text": "My package for order KO-26989 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T10:20:28-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T10:22:13-07:00",
+     "text": "Can someone call me about this?"
+    }
+   ]
+  },
+  {
+   "id": "c155",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T10:19:18-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    }
+   ]
+  },
+  {
+   "id": "c156",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T10:20:54-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-24667."
+    },
+    {
+     "at": "2026-09-27T10:23:19-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-27T10:25:18-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-27T10:26:37-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c157",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-27T10:25:02-07:00",
+     "text": "I placed order KO-83306 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-27T10:26:57-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    }
+   ]
+  },
+  {
+   "id": "c158",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T10:27:07-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T10:28:43-07:00",
+     "text": "It's order KO-43299."
+    }
+   ]
+  },
+  {
+   "id": "c159",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T10:32:44-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T10:34:50-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-27T10:35:56-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c160",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T10:35:28-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T10:37:34-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-27T10:38:45-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c161",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T10:44:49-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T10:46:15-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c162",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T10:48:34-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T10:50:35-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c163",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T10:49:45-07:00",
+     "text": "My package for order KO-57566 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T10:51:53-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T10:53:56-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-27T10:55:10-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c164",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T10:54:52-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-27T10:56:43-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    }
+   ]
+  },
+  {
+   "id": "c165",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T10:57:48-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T10:59:46-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-27T11:01:29-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c166",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T11:16:06-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T11:18:30-07:00",
+     "text": "It's order KO-64974."
+    },
+    {
+     "at": "2026-09-27T11:20:43-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c167",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T11:16:19-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-27T11:18:46-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    }
+   ]
+  },
+  {
+   "id": "c168",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T11:26:20-07:00",
+     "text": "Hi, where is my order KO-59741? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T11:27:56-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c169",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T11:28:54-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T11:30:45-07:00",
+     "text": "Who pays the duties?"
+    }
+   ]
+  },
+  {
+   "id": "c170",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T11:30:46-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T11:32:45-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-27T11:34:22-07:00",
+     "text": "How do I get a return label?"
+    },
+    {
+     "at": "2026-09-27T11:35:34-07:00",
+     "text": "How long until the refund shows up?"
+    }
+   ]
+  },
+  {
+   "id": "c171",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T11:37:32-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-270."
+    },
+    {
+     "at": "2026-09-27T11:38:45-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-27T11:41:09-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c172",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T11:39:35-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T11:41:16-07:00",
+     "text": "It's order KO-37278."
+    }
+   ]
+  },
+  {
+   "id": "c173",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T11:39:52-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T11:41:30-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-27T11:43:20-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c174",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T11:41:03-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T11:41:53-07:00",
+     "text": "Who pays the duties?"
+    }
+   ]
+  },
+  {
+   "id": "c175",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-27T11:41:13-07:00",
+     "text": "I placed order KO-34641 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-27T11:42:01-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-27T11:42:46-07:00",
+     "text": "How much extra is that?"
+    },
+    {
+     "at": "2026-09-27T11:43:35-07:00",
+     "text": "Perfect, please do it."
+    }
+   ]
+  },
+  {
+   "id": "c176",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T11:48:56-07:00",
+     "text": "Hi, where is my order KO-20766? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T11:50:28-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T11:51:57-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-27T11:53:49-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c177",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T11:49:03-07:00",
+     "text": "Hi, where is my order KO-73223? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T11:50:58-07:00",
+     "text": "It's been three days though. Is that normal?"
+    }
+   ]
+  },
+  {
+   "id": "c178",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T11:49:36-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T11:51:45-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-27T11:53:52-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c179",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-27T11:54:23-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-27T11:56:02-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-27T11:56:50-07:00",
+     "text": "Where do I send the photos?"
+    },
+    {
+     "at": "2026-09-27T11:58:47-07:00",
+     "text": "How long do repairs usually take?"
+    }
+   ]
+  },
+  {
+   "id": "c180",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T11:58:55-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-67390."
+    },
+    {
+     "at": "2026-09-27T12:01:11-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-27T12:02:43-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c181",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T12:01:21-07:00",
+     "text": "Hi, where is my order KO-57658? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T12:02:57-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T12:04:24-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-27T12:06:41-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c182",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-27T12:08:21-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-27T12:09:24-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    }
+   ]
+  },
+  {
+   "id": "c183",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T12:12:02-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    }
+   ]
+  },
+  {
+   "id": "c184",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T12:14:52-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T12:16:29-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c185",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T12:17:14-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T12:19:06-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-27T12:20:45-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c186",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T12:18:12-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T12:20:38-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-27T12:23:05-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c187",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T12:18:27-07:00",
+     "text": "My package for order KO-70175 says delivered but it isn't here."
+    }
+   ]
+  },
+  {
+   "id": "c188",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T12:26:11-07:00",
+     "text": "My package for order KO-83093 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T12:28:27-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T12:30:03-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-27T12:32:15-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c189",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T12:27:59-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T12:30:19-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c190",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T12:28:19-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T12:30:21-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-27T12:32:42-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c191",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T12:28:52-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T12:30:16-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c192",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T12:30:20-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T12:31:14-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-27T12:33:14-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c193",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T12:34:35-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    }
+   ]
+  },
+  {
+   "id": "c194",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T12:36:28-07:00",
+     "text": "My package for order KO-69662 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T12:38:27-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T12:40:08-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-27T12:41:15-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c195",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T12:42:44-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T12:44:05-07:00",
+     "text": "It's order KO-98778."
+    }
+   ]
+  },
+  {
+   "id": "c196",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T12:48:30-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T12:50:41-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-27T12:51:36-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c197",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T12:55:38-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-282."
+    }
+   ]
+  },
+  {
+   "id": "c198",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T12:57:52-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    }
+   ]
+  },
+  {
+   "id": "c199",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T12:58:51-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T13:00:40-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-27T13:02:24-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c200",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T12:59:46-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T13:00:32-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c201",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T12:59:56-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T13:02:09-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-27T13:03:15-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    },
+    {
+     "at": "2026-09-27T13:04:22-07:00",
+     "text": "What about picking it up at the Bend store instead?"
+    }
+   ]
+  },
+  {
+   "id": "c202",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T13:01:40-07:00",
+     "text": "Hi, where is my order KO-24217? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T13:02:47-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T13:04:46-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c203",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-27T13:13:58-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    }
+   ]
+  },
+  {
+   "id": "c204",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T13:19:25-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T13:21:05-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-27T13:21:54-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c205",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T13:19:48-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T13:21:36-07:00",
+     "text": "How much would it be for five days?"
+    },
+    {
+     "at": "2026-09-27T13:22:25-07:00",
+     "text": "What happens if I bring it back a day late?"
+    }
+   ]
+  },
+  {
+   "id": "c206",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T13:22:27-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-257."
+    }
+   ]
+  },
+  {
+   "id": "c207",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T13:23:01-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-130."
+    },
+    {
+     "at": "2026-09-27T13:24:26-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-27T13:26:50-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c208",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T13:24:47-07:00",
+     "text": "My package for order KO-90976 says delivered but it isn't here."
+    }
+   ]
+  },
+  {
+   "id": "c209",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T13:30:06-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T13:31:49-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-27T13:33:41-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c210",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T13:32:44-07:00",
+     "text": "My package for order KO-70014 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T13:34:44-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T13:37:05-07:00",
+     "text": "Can someone call me about this?"
+    }
+   ]
+  },
+  {
+   "id": "c211",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T13:37:17-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    }
+   ]
+  },
+  {
+   "id": "c212",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T13:43:07-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-88578."
+    },
+    {
+     "at": "2026-09-27T13:45:15-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-27T13:47:21-07:00",
+     "text": "Will the new one ship right away?"
+    }
+   ]
+  },
+  {
+   "id": "c213",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T13:45:26-07:00",
+     "text": "My package for order KO-91411 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T13:46:50-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c214",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T13:54:39-07:00",
+     "text": "My package for order KO-35853 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T13:57:05-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T13:59:08-07:00",
+     "text": "Can someone call me about this?"
+    },
+    {
+     "at": "2026-09-27T14:00:21-07:00",
+     "text": "OK, thank you."
+    }
+   ]
+  },
+  {
+   "id": "c215",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T13:55:54-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    }
+   ]
+  },
+  {
+   "id": "c216",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T13:56:09-07:00",
+     "text": "Do you rent bear canisters?"
+    }
+   ]
+  },
+  {
+   "id": "c217",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T14:01:07-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T14:02:13-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c218",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T14:07:39-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T14:08:40-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-27T14:10:54-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c219",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T14:17:21-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T14:18:25-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c220",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T14:28:05-07:00",
+     "text": "Hi, where is my order KO-73263? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T14:29:43-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T14:30:34-07:00",
+     "text": "Can someone call me about it today?"
+    },
+    {
+     "at": "2026-09-27T14:32:54-07:00",
+     "text": "OK, I'll watch for the email then. Thanks."
+    }
+   ]
+  },
+  {
+   "id": "c221",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T14:29:30-07:00",
+     "text": "My package for order KO-74961 says delivered but it isn't here."
+    }
+   ]
+  },
+  {
+   "id": "c222",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T14:35:06-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T14:35:54-07:00",
+     "text": "It's order KO-69763."
+    },
+    {
+     "at": "2026-09-27T14:37:49-07:00",
+     "text": "When will I see the refund?"
+    }
+   ]
+  },
+  {
+   "id": "c223",
+   "topic": "price_drop",
+   "turns": [
+    {
+     "at": "2026-09-27T14:36:50-07:00",
+     "text": "The Cirrus down jacket I bought last week is $50 cheaper now. Can I get the difference back?"
+    },
+    {
+     "at": "2026-09-27T14:38:58-07:00",
+     "text": "It's order KO-77706."
+    }
+   ]
+  },
+  {
+   "id": "c224",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T14:38:21-07:00",
+     "text": "My package for order KO-83113 says delivered but it isn't here."
+    }
+   ]
+  },
+  {
+   "id": "c225",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T14:48:00-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-54562."
+    },
+    {
+     "at": "2026-09-27T14:49:59-07:00",
+     "text": "Is the exchange free?"
+    }
+   ]
+  },
+  {
+   "id": "c226",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T14:53:51-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-119."
+    }
+   ]
+  },
+  {
+   "id": "c227",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T14:55:21-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    }
+   ]
+  },
+  {
+   "id": "c228",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T14:55:32-07:00",
+     "text": "Hi, where is my order KO-46370? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T14:57:04-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T14:57:59-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c229",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T14:55:33-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T14:56:45-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-27T14:58:54-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c230",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T14:59:07-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T14:59:56-07:00",
+     "text": "Who pays the duties?"
+    }
+   ]
+  },
+  {
+   "id": "c231",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T15:02:59-07:00",
+     "text": "My package for order KO-21676 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T15:05:26-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T15:07:18-07:00",
+     "text": "Can someone call me about this?"
+    }
+   ]
+  },
+  {
+   "id": "c232",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T15:04:27-07:00",
+     "text": "My package for order KO-88313 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T15:06:15-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T15:07:21-07:00",
+     "text": "Can someone call me about this?"
+    }
+   ]
+  },
+  {
+   "id": "c233",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T15:04:49-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-92840."
+    },
+    {
+     "at": "2026-09-27T15:06:30-07:00",
+     "text": "Is the exchange free?"
+    }
+   ]
+  },
+  {
+   "id": "c234",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T15:10:49-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T15:11:35-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-27T15:13:26-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  },
+  {
+   "id": "c235",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T15:22:47-07:00",
+     "text": "Hi, where is my order KO-27656? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T15:23:37-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T15:25:37-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c236",
+   "topic": "where_is_order",
+   "turns": [
+    {
+     "at": "2026-09-27T15:29:25-07:00",
+     "text": "Hi, where is my order KO-21201? Tracking still says label created."
+    },
+    {
+     "at": "2026-09-27T15:31:18-07:00",
+     "text": "It's been three days though. Is that normal?"
+    },
+    {
+     "at": "2026-09-27T15:33:33-07:00",
+     "text": "Can someone call me about it today?"
+    }
+   ]
+  },
+  {
+   "id": "c237",
+   "topic": "recall",
+   "turns": [
+    {
+     "at": "2026-09-27T15:36:39-07:00",
+     "text": "Is my Summit carabiner part of the recall? The lot number is S23-178."
+    },
+    {
+     "at": "2026-09-27T15:37:26-07:00",
+     "text": "How do I get the replacement?"
+    },
+    {
+     "at": "2026-09-27T15:39:52-07:00",
+     "text": "Should I stop using the others from the same pack too?"
+    }
+   ]
+  },
+  {
+   "id": "c238",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T15:45:10-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T15:45:59-07:00",
+     "text": "Do I have to be home for the delivery?"
+    },
+    {
+     "at": "2026-09-27T15:47:11-07:00",
+     "text": "Can I call someone to set up the delivery appointment today?"
+    }
+   ]
+  },
+  {
+   "id": "c239",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T15:51:11-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-27T15:52:37-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    },
+    {
+     "at": "2026-09-27T15:54:36-07:00",
+     "text": "Can you send it to a different email instead?"
+    }
+   ]
+  },
+  {
+   "id": "c240",
+   "topic": "warranty_zipper",
+   "turns": [
+    {
+     "at": "2026-09-27T15:55:21-07:00",
+     "text": "The door zipper on my Ridgeline 2 tent broke after two seasons. Is that covered?"
+    },
+    {
+     "at": "2026-09-27T15:57:13-07:00",
+     "text": "I bought it a couple of years ago and don't have the order number."
+    },
+    {
+     "at": "2026-09-27T15:58:05-07:00",
+     "text": "Where do I send the photos?"
+    },
+    {
+     "at": "2026-09-27T15:59:05-07:00",
+     "text": "How long do repairs usually take?"
+    }
+   ]
+  },
+  {
+   "id": "c241",
+   "topic": "change_order",
+   "turns": [
+    {
+     "at": "2026-09-27T16:07:19-07:00",
+     "text": "I placed order KO-39534 about 20 minutes ago. Can I still change it?"
+    },
+    {
+     "at": "2026-09-27T16:08:50-07:00",
+     "text": "Can I switch the shipping to expedited?"
+    },
+    {
+     "at": "2026-09-27T16:10:57-07:00",
+     "text": "How much extra is that?"
+    }
+   ]
+  },
+  {
+   "id": "c242",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T16:13:29-07:00",
+     "text": "My package for order KO-83276 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T16:15:56-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    },
+    {
+     "at": "2026-09-27T16:17:45-07:00",
+     "text": "Can someone call me about this?"
+    }
+   ]
+  },
+  {
+   "id": "c243",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T16:28:04-07:00",
+     "text": "My package for order KO-31639 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T16:30:22-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c244",
+   "topic": "kayak_freight",
+   "turns": [
+    {
+     "at": "2026-09-27T16:38:22-07:00",
+     "text": "How does shipping work for the Tidewater 12 kayak?"
+    },
+    {
+     "at": "2026-09-27T16:40:10-07:00",
+     "text": "Do I have to be home for the delivery?"
+    }
+   ]
+  },
+  {
+   "id": "c245",
+   "topic": "rental",
+   "turns": [
+    {
+     "at": "2026-09-27T16:47:37-07:00",
+     "text": "Do you rent bear canisters?"
+    },
+    {
+     "at": "2026-09-27T16:48:57-07:00",
+     "text": "How much would it be for five days?"
+    }
+   ]
+  },
+  {
+   "id": "c246",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T16:58:12-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T17:00:37-07:00",
+     "text": "What if I'm in Trail Club?"
+    }
+   ]
+  },
+  {
+   "id": "c247",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T17:04:56-07:00",
+     "text": "My package for order KO-78237 says delivered but it isn't here."
+    }
+   ]
+  },
+  {
+   "id": "c248",
+   "topic": "return_boots",
+   "turns": [
+    {
+     "at": "2026-09-27T17:05:05-07:00",
+     "text": "Can I return Switchback boots I wore on one hike? They give me blisters."
+    },
+    {
+     "at": "2026-09-27T17:07:32-07:00",
+     "text": "What if I'm in Trail Club?"
+    },
+    {
+     "at": "2026-09-27T17:09:57-07:00",
+     "text": "How do I get a return label?"
+    }
+   ]
+  },
+  {
+   "id": "c249",
+   "topic": "exchange_size",
+   "turns": [
+    {
+     "at": "2026-09-27T17:33:39-07:00",
+     "text": "I need to swap my Traverse 55 for a size L. Order KO-71117."
+    },
+    {
+     "at": "2026-09-27T17:35:38-07:00",
+     "text": "Is the exchange free?"
+    },
+    {
+     "at": "2026-09-27T17:38:07-07:00",
+     "text": "Will the new one ship right away?"
+    },
+    {
+     "at": "2026-09-27T17:40:10-07:00",
+     "text": "Great, thanks for the help!"
+    }
+   ]
+  },
+  {
+   "id": "c250",
+   "topic": "gift_card",
+   "turns": [
+    {
+     "at": "2026-09-27T17:40:58-07:00",
+     "text": "I bought a digital gift card for my brother but he never got the email."
+    },
+    {
+     "at": "2026-09-27T17:42:13-07:00",
+     "text": "It was $100, and I think I typed his address wrong."
+    }
+   ]
+  },
+  {
+   "id": "c251",
+   "topic": "missing_package",
+   "turns": [
+    {
+     "at": "2026-09-27T17:43:40-07:00",
+     "text": "My package for order KO-45947 says delivered but it isn't here."
+    },
+    {
+     "at": "2026-09-27T17:45:06-07:00",
+     "text": "I already checked with the neighbors and around the house."
+    }
+   ]
+  },
+  {
+   "id": "c252",
+   "topic": "canada",
+   "turns": [
+    {
+     "at": "2026-09-27T17:48:54-07:00",
+     "text": "Do you ship to Canada?"
+    },
+    {
+     "at": "2026-09-27T17:50:35-07:00",
+     "text": "Who pays the duties?"
+    },
+    {
+     "at": "2026-09-27T17:51:44-07:00",
+     "text": "How long does it take to get to Vancouver?"
+    }
+   ]
+  }
+ ]
+}

@@ -48,7 +48,7 @@ You need Python **3.10+** and no API key. (macOS's built-in `python3` is
 `PYTHON=python3.12 ./scripts/setup.sh`.)
 
 ```bash
-git clone [confirm: repo URL] cache-detective && cd cache-detective
+git clone [confirm: lab repo URL] cache-detective && cd cache-detective
 ./scripts/setup.sh              # creates .venv and installs requirements
 .venv/bin/python app.py         # the weekend readout, offline
 ```

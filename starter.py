@@ -20,8 +20,8 @@ from support import HANDBOOK, make_request
 #             price in prices. Price cache writes at "cache_write_5m", and
 #             output_tokens at "output". app.py divides per conversation.
 # The two cache fields can be None. Count None as 0.
-# prices defaults to config.PRICES (Opus 5.5); pass your own model's to use
-# meter() in your app (README, "Take it to your app").
+# prices defaults to config.PRICES (Opus 5.5). cache_check.py, the file you take
+# to your app, runs this meter on your model's (README, "Take it to your app").
 # Hint: u.input_tokens, u.cache_creation_input_tokens, u.cache_read_input_tokens, u.output_tokens
 def meter(usages: list, prices: dict | None = None) -> tuple[float, float]:
     prices = prices or config.PRICES

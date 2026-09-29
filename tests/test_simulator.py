@@ -1,9 +1,9 @@
 """
 Checks the offline client against the documented caching rules, one rule per
 test, each with its doc link, and the readings offline.py marks Unconfirmed.
-Everything else in the lab rests on these. The last two tests check
-divergence.py against the client's diagnostics, and the story: Friday's
-deploy tripled the bill. They pass whatever is in starter.py.
+Everything else in the lab rests on these. The last tests check
+cache_check.py's first_divergence() against the client's diagnostics, and the
+story: Friday's deploy tripled the bill. They pass whatever is in starter.py.
 
     .venv/bin/python -m pytest -q tests/test_simulator.py
 """
@@ -13,7 +13,7 @@ import config
 import offline
 # thursday_request lives in app.py, not support.py: clue 3's hint sends learners to support.py.
 from app import thursday_request
-from divergence import first_divergence, fingerprint
+from cache_check import first_divergence, fingerprint
 from offline import OfflineClient, SimulatedAPIError
 from support import HANDBOOK, WEEKEND, friday_request, make_request, replay, send_plain
 from checks import truth
@@ -381,7 +381,7 @@ def test_output_stops_at_max_tokens():
 
 
 def test_first_divergence_agrees_with_diagnostics():
-    # divergence.py, the finder README "Take it to your app" offers for Bedrock, names the part
+    # first_divergence(), which cache_check.py uses on Bedrock (README, "Take it to your app"), names the part
     # diagnostics names: the system prompt on Friday's code, nothing once the time moves.
     history = [{"role": "user", "content": "Do you rent bear canisters?"}, {"role": "assistant", "content": "Yes."}]
     turn_1 = friday_request([], history[0]["content"], "2026-09-26T09:00:00-07:00")

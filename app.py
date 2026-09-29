@@ -5,7 +5,7 @@ conversation on one screen.
 
     .venv/bin/python app.py                          # your code: starter.py
     .venv/bin/python app.py --requests 6             # show each request of the first 6 conversations
-    .venv/bin/python app.py --log usage.jsonl        # also log your code's usage, for usage_report.py
+    .venv/bin/python app.py --log usage.jsonl        # also log your code's usage, for cache_check.py
     LAB_SOLUTION=reference .venv/bin/python app.py   # the finished version
 
 Before it says "Case closed", it runs the tests' checks (checks.py) and bar.
@@ -160,7 +160,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--requests", type=int, default=3, metavar="N",
                         help="show each request of the first N conversations (default 3)")
-    parser.add_argument("--log", metavar="FILE", help="write your code's usage to FILE, one JSON line per request")
+    parser.add_argument("--log", metavar="FILE",
+                        help="write your code's usage and miss reasons to FILE, one JSON line per request")
     args = parser.parse_args()
 
     solution_name = os.environ.get("LAB_SOLUTION", "starter")
@@ -263,9 +264,10 @@ def main():
             print("  Run the tests to confirm.")
     if args.log:
         with open(args.log, "w") as log:
-            for t in yours:
-                log.write(json.dumps(t.usage.to_dict()) + "\n")
-        print(f"  Logged your code's {len(yours)} usages. Read them back: .venv/bin/python usage_report.py {args.log}")
+            for t in yours:  # the lines cache_check.py's CacheCheck writes
+                reason = None if t.reason is None else reason_kind(t.reason)
+                log.write(json.dumps({"usage": t.usage.to_dict(), "reason": reason}) + "\n")
+        print(f"  Logged your code's {len(yours)} requests. Read them back: .venv/bin/python cache_check.py {args.log}")
     print()
 
 

@@ -11,8 +11,10 @@ A working support agent and a one-screen readout of its weekend: cache hit
 rate and dollars per conversation, Friday's code next to yours. It runs
 offline out of the box, on a simulated client that follows the documented
 caching rules, so you need no API key to start. Solving the case is four small
-functions in one file, and each one brings a clue online. About 35 minutes if
-you've shipped on the Claude API; about an hour if the API is new to you.
+functions in one file, and each one brings a clue online. You take home
+`cache_check.py`, one file you drop into your own app to report its cache hit
+rate, cost, and why requests missed. About 35 minutes if you've shipped on
+the Claude API; about an hour if the API is new to you.
 Learners need Setup through Take it to your app; Run it live is optional and
 billed, and the sections after it are for instructors and field teams.
 
@@ -181,9 +183,9 @@ entry had expired (Keep going, TTL).
 LAB_SOLUTION=reference .venv/bin/python -m pytest -q tests   # the finished version passes
 ```
 
-Before you write anything: 8 failed (the clue tests), 63 passed, 1 skipped.
-When you're done: 71 passed, 1 skipped (the live test). A copy without
-`reference.py` skips 2 more. `tests/test_offline.py` checks each clue with
+Before you write anything: 8 failed (the clue tests), 64 passed, 1 skipped.
+When you're done: 72 passed, 1 skipped (the live test). A copy without
+`reference.py` skips 3 more. `tests/test_offline.py` checks each clue with
 `checks.py`, then replays the weekend: Friday's code must stay near 0%, and
 yours must clear `config.BAR` (at least 88% and at most $0.0190 per
 conversation), priced by the tests' own meter (`checks.truth()`) so a bug in
@@ -243,36 +245,32 @@ it fills.
 
 ## Take it to your app
 
-Copy your `meter()` and `send_with_diagnostics()` into your app, dropping
-the `config.PRICES` default (pass your own prices). Call
-`send_with_diagnostics()` where you call `client.beta.messages.create`, carry
-each conversation's latest `response.id` forward, and log `reason.type` when
-the reason is neither `None` nor `"pending"`. (In your app, `None` can also
-mean a request went out without `diagnostics`.) Streaming? Pass the same
-`diagnostics` to `client.beta.messages.stream(...)` and read
-`stream.get_final_message().diagnostics`. Diagnostics never blocks or fails
-a request, and it keeps only hashes and token-count estimates, not your
-prompts ([data retention](https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#data-retention)).
+Copy **`cache_check.py`** into your app. It needs only the `anthropic` SDK:
+the meter and witness from clues 1 and 2, carrying each conversation's
+`response.id` forward for you. Set its `PRICES` to your model's, then send
+through it:
 
-Log `usage` too, and `usage_report.py` reads it back through your `meter()`.
-Try it on the lab's weekend first; it should match the readout's hit rate and
+```python
+check = CacheCheck(client, log="usage.jsonl")    # diagnostics=False on Bedrock
+response = check.create(conversation_id, model=..., max_tokens=..., system=..., messages=...)
+print(check.report())    # requests, hit rate, total cost, miss reasons by type
+```
+
+Try it on the lab's weekend first. It should match the readout's hit rate and
 weekend bill for your code:
 
 ```bash
-.venv/bin/python app.py --log usage.jsonl       # your code's 663 usages, one JSON line each
-.venv/bin/python usage_report.py usage.jsonl
+.venv/bin/python app.py --log usage.jsonl       # your code's 663 requests, one JSON line each
+.venv/bin/python cache_check.py usage.jsonl
 ```
 
-To take it home, paste your `meter()` over its import, set `PRICES` to your
-model's, and log each response with
-`log.write(json.dumps(response.usage.to_dict()) + "\n")`.
-
-Diagnostics is Claude API only. On Bedrock, copy `divergence.py` too:
-`first_divergence(earlier, later)` hashes the model, tools, system prompt,
-the request parameters that bust the cache (like effort and `tool_choice`),
-and each message of two consecutive requests, and names the first part that
-differs (`"system"`, `"params"`, `"messages[3]"`). For Bedrock's usage field
-names, the Claude docs send you to
+Diagnostics never blocks or fails a request, and it keeps only hashes and
+token-count estimates, not your prompts
+([data retention](https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#data-retention)).
+It's Claude API only, so on Bedrock `CacheCheck` names the first part of each
+request that changed from the conversation's last one instead (`"system"`,
+`"params"`, `"messages[3]"`). For Bedrock's usage field names, the Claude docs
+send you to
 [AWS's prompt caching page](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html),
 which documents only the Converse API's.
 
@@ -403,11 +401,11 @@ switch to offline and show your own earlier live numbers.
   rather than per workspace, and AWS's own rates. AWS also lists best-effort
   implicit caching for Anthropic models, so clue 4's first-turn miss may not
   show up there (this lab hasn't been run on Bedrock yet). To find the
-  culprit, run `divergence.py` on two consecutive requests of one
-  conversation: the first part whose hash differs (the tools, the system
-  prompt, a cache-busting parameter, or a message) is the change, and if none
-  differs, the entry may have expired. They can send you the hashes
-  (`fingerprint()`) instead of the prompts.
+  culprit, run `first_divergence()` from `cache_check.py` on two consecutive
+  requests of one conversation: the first part whose hash differs (the tools,
+  the system prompt, a cache-busting parameter, or a message) is the change,
+  and if none differs, the entry may have expired. They can send you the
+  hashes (`fingerprint()`) instead of the prompts.
 - **Price the fix at their volume.** On Opus 5.5, cache reads cost 0.05x base
   input, 5-minute writes 1.25x, and 1-hour writes 2x. In this lab (simulated
   token counts), 10,000 conversations cost $539 on Friday's code and $171
@@ -467,9 +465,8 @@ starter.py        ← the only file you edit
 reference.py      ← finished versions
 app.py            ← the weekend readout
 checks.py         ← each clue's check and the tests' meter, shared by the readout and the tests
-usage_report.py   ← hit rate and dollars from a usage log (app.py --log), priced by your meter()
+cache_check.py    ← take it to your app: hit rate, cost, and miss reasons, from calls or a log
 support.py        ← Wren: handbook loader, Friday's request, the replay loop
-divergence.py     ← first_divergence(): what changed between two requests, on any provider
 offline.py        ← simulated Claude API client for offline mode
 clients.py        ← picks the client for config.PROVIDER
 config.py         ← provider, model IDs, region, prices, the tests' bar

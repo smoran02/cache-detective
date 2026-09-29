@@ -13,15 +13,17 @@ app.py uses before it says "Case closed".
 import importlib
 import json
 import os
+import subprocess
 import sys
 import types
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
 import app
+import cache_check
 import config
-import usage_report
 from app import thursday_request
 from checks import clue_1_problem, clue_2_problem, clue_3_problem, clue_4_problem, reason_problem, shortfalls, truth
 from offline import OfflineClient
@@ -288,21 +290,64 @@ def test_the_readout_shows_the_readmes_numbers(capsys, monkeypatch):
         assert number in out, f"the readout no longer shows {number}: update the README's checkpoint table"
 
 
-def diagnosed_send(client, request, previous_id):
-    return client.beta.messages.create(**request, diagnostics={"previous_message_id": previous_id}), None
+def through_cache_check(build, diagnostics=True):
+    """The weekend, every request sent by one CacheCheck, which carries each conversation's last id itself."""
+    client = OfflineClient()
+    check = cache_check.CacheCheck(client, config.PRICES, diagnostics=diagnostics)
+    conversation_of = {}  # response id -> conversation: replay() hands send() only the previous id
+
+    def send(client, request, previous_id):
+        conversation = conversation_of[previous_id] if previous_id else object()
+        assert check.last_id.get(conversation) == previous_id, "create() should carry the id forward as replay() does"
+        response = check.create(conversation, **request)
+        conversation_of[response.id] = conversation
+        return response, None
+
+    replay(client, WEEKEND, build, send)
+    return check
 
 
 @offline_only
-def test_usage_report_reads_back_a_usage_log(capsys, monkeypatch, tmp_path):
-    # README, Take it to your app: app.py --log writes usage.to_dict() one line per request,
-    # and usage_report.py reads it back into the SDK's Usage type, beta fields and all.
+def test_cache_check_reports_what_the_readout_does(capsys, monkeypatch, tmp_path):
+    # README, Take it to your app: cache_check.py on the weekend, sending the reference's fix through
+    # create() or reading back app.py --log, gives the readout's hit rate and weekend bill for your code.
+    reference = pytest.importorskip("reference")
     log = tmp_path / "usage.jsonl"
-    readout(monkeypatch, capsys, "--log", str(log))
-    assert len(log.read_text().splitlines()) == sum(len(c["turns"]) for c in WEEKEND)
-    turns = replay(OfflineClient(), WEEKEND[:10], friday_request, diagnosed_send)
-    log.write_text("".join(json.dumps(t.usage.to_dict()) + "\n" for t in turns))
-    monkeypatch.setattr(usage_report, "meter", lambda usages, prices: truth(usages))
-    hit_rate, dollars = truth(t.usage for t in turns)
-    assert usage_report.report(str(log)) == (
-        f"{len(turns)} requests: {hit_rate:.1%} of input read from the cache, ${dollars:.2f}")
-    assert usage_report.PRICES == config.PRICES, "usage_report.py's prices should match config.PRICES"
+    out = readout(monkeypatch, capsys, "--log", str(log), **{name: getattr(reference, name) for name in FUNCTIONS})
+    hit_rate = next(line.split()[-1] for line in out.splitlines() if "Cache hit rate" in line)  # your code's column
+    bill = next(line.split()[3] for line in out.splitlines() if "Weekend bill" in line)
+    requests = sum(len(c["turns"]) for c in WEEKEND)
+    readouts = f"{requests} requests: {hit_rate} of input read from the cache, {bill}\nMiss reasons: none"
+    assert cache_check.report(cache_check.load(str(log)), config.PRICES) == readouts
+
+    def fixed(history, question, now):
+        return reference.place_breakpoint(reference.build_request(history, question, now))
+
+    # On the Claude API it names diagnostics' reason; on Bedrock (diagnostics=False), the part that changed.
+    follow_ups = requests - len(WEEKEND)
+    for diagnostics, friday in ((True, "system_changed"), (False, "system")):
+        assert through_cache_check(fixed, diagnostics).report() == readouts
+        assert through_cache_check(friday_request, diagnostics).report().endswith(
+            f"Miss reasons: {friday} {follow_ups}")
+
+
+def test_cache_check_reports_a_usage_log(tmp_path):
+    # python cache_check.py usage.jsonl on 4 requests, at Opus 5.5 prices. Two write 100,000 tokens
+    # ($0.50 each), one reads them ($0.02) and writes 2,000 at 1 hour ($0.016), one has 1,000 uncached
+    # and no cache fields ($0.004), and each outputs 1,000 ($0.02): $1.12, and 100,000 of 303,000 input read.
+    write = {"input_tokens": 0, "output_tokens": 1000, "cache_creation_input_tokens": 100_000,
+             "cache_read_input_tokens": 0}
+    read = {"input_tokens": 0, "output_tokens": 1000, "cache_creation_input_tokens": 2000,
+            "cache_read_input_tokens": 100_000,
+            "cache_creation": {"ephemeral_5m_input_tokens": 0, "ephemeral_1h_input_tokens": 2000}}
+    bare = {"input_tokens": 1000, "output_tokens": 1000, "cache_creation_input_tokens": None,
+            "cache_read_input_tokens": None}
+    log = tmp_path / "usage.jsonl"
+    log.write_text("".join(json.dumps({"usage": usage, "reason": reason}) + "\n" for usage, reason in
+                           ((write, None), (write, "system_changed"), (read, "pending"), (bare, None))))
+    run = subprocess.run([sys.executable, "cache_check.py", str(log)], cwd=Path(__file__).parent.parent,
+                         capture_output=True, text=True)
+    assert run.returncode == 0, run.stderr
+    assert run.stdout == ("4 requests: 33.0% of input read from the cache, $1.12\n"
+                          "Miss reasons: system_changed 1, pending 1\n")
+    assert cache_check.PRICES == config.PRICES, "cache_check.py's prices should match config.PRICES"

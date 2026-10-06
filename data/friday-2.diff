@@ -1,0 +1,24 @@
+commit 5e2b7d1c9a4f60e38b1d2c7a9f04e6b3d85c1a27
+Author: Wren team <wren-dev@kestrel.example>
+Date:   Fri Sep 25 16:48:03 2026 -0700
+
+    Simplify the system prompt
+
+    Pass it as a plain string. The top-level cache_control already
+    turns on caching.
+
+diff --git a/wren/requests.py b/wren/requests.py
+index 6d20a4f..8a74d05 100644
+--- a/wren/requests.py
++++ b/wren/requests.py
+@@ -21,9 +21,7 @@ def make_request(system, messages: list) -> dict:
+         "max_tokens": config.MAX_TOKENS,
+         # Top-level cache_control turns on automatic caching: the API puts the
+         # breakpoint on the last cacheable block of the request.
+         "cache_control": {"type": "ephemeral"},
+-        "system": [
+-            {"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}
+-        ],
++        "system": system,
+         "messages": messages,
+     }

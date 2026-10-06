@@ -69,7 +69,7 @@ class Lab:
 
 
 def thursday_request(history: list, question: str, now: str) -> dict:
-    """Wren's request on Thursday, before Friday's deploy (data/friday.diff)."""
+    """Wren's request on Thursday, before Friday's deploy (data/friday-1.diff and data/friday-2.diff)."""
     system = [{"type": "text", "text": HANDBOOK, "cache_control": {"type": "ephemeral"}}]
     return make_request(system, history + [{"role": "user", "content": question}])
 

@@ -45,14 +45,19 @@ have the full rules.
 
 ## Setup
 
-You need Python **3.10+** and no API key. (macOS's built-in `python3` is
-3.9.6: install a newer one from python.org or Homebrew, then run
-`PYTHON=python3.12 ./scripts/setup.sh`.)
+You need Python **3.10+** and no API key.
 
 ```bash
 git clone https://github.com/smoran02/cache-detective && cd cache-detective
 ./scripts/setup.sh              # creates .venv and installs requirements
 .venv/bin/python app.py         # the weekend readout, offline
+```
+
+On macOS, the built-in `python3` is 3.9.6. Install a newer one from
+python.org or Homebrew, then run setup with it:
+
+```bash
+PYTHON=python3.12 ./scripts/setup.sh
 ```
 
 On Windows, run `python -m venv .venv` and
@@ -68,7 +73,12 @@ write first.
 ## What you build
 
 Open **`starter.py`**. Four functions, all `raise NotImplementedError`. Fill
-them in one at a time and run `app.py` after each.
+them in one at a time. After each, run `app.py`, then that clue's tests:
+
+```bash
+.venv/bin/python app.py
+.venv/bin/python -m pytest -q tests -k clue_1    # clue_1 to clue_4
+```
 
 | # | Function | Clue | API surface | Lines |
 |---|---|---|---|---|
@@ -89,13 +99,14 @@ Stuck? `reference.py` has the finished versions. `LAB_SOLUTION=reference .venv/b
 **Clue 1: the meter.** Every response carries `usage`. Three fields describe
 input, and they don't overlap:
 
-| Field | What it counts | Opus 5.5 price |
-|---|---|---|
-| `cache_read_input_tokens` | read from the cache | $0.20 / MTok |
-| `cache_creation_input_tokens` | written to the cache | $5 / MTok (5-minute TTL) |
-| `input_tokens` | after the last breakpoint, neither read nor written | $4 / MTok |
+| Field | What it counts | Opus 5.5 price | `prices` key |
+|---|---|---|---|
+| `cache_read_input_tokens` | read from the cache | $0.20 / MTok | `"cache_read"` |
+| `cache_creation_input_tokens` | written to the cache | $5 / MTok (5-minute TTL) | `"cache_write_5m"` |
+| `input_tokens` | after the last breakpoint, neither read nor written | $4 / MTok | `"input"` |
 
 All input is the sum of the three: `input_tokens` alone is not the total.
+Output (`output_tokens`, thinking included) costs $20 / MTok, at `"output"`.
 `starter.py` has the exact contract. Run `app.py`: Friday's code has a
 **0.0%** hit rate at **$0.0890** per conversation, and the line under the
 table shows Thursday's code, before the deploy, at **$0.0299**. The bill
@@ -108,12 +119,13 @@ compares a request with an earlier one and names the first thing that
 changed. Opt in on every request with a `diagnostics` object whose
 `previous_message_id` is the previous response's `id` (or `None` on a
 conversation's first turn). The API needs no beta header, but the Python SDK
-(1.8) takes `diagnostics` only on its beta methods, like
+(1.8 and later) takes `diagnostics` only on its beta methods, like
 `client.beta.messages.create`. `response.diagnostics` comes back in one of
 three documented states, and `starter.py` says what to return for each. Run
 `app.py`: every follow-up turn says **`system_changed`**, with about 5,200
 tokens missed.
-Friday's deploy is in `data/friday.diff`, from Wren's repo; the lab's copy of
+Friday's deploy was two commits to Wren's repo. Read the first,
+`data/friday-1.diff`, now, and save the second for clue 4. The lab's copy of
 the deployed code is `friday_request()` in `support.py`. What in the system
 prompt is different on every request?
 
@@ -152,7 +164,8 @@ so why can't a new conversation's first turn read it? Diagnostics can't
 say: a first turn has nothing to compare against. Reason from the rules in
 [How automatic prefix checking works](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#how-automatic-prefix-checking-works)
 and its second example, "Common mistake: Breakpoint on content that changes
-every request." Predict before you read the diff's other hunk: on `c003`'s
+every request." Predict before you read the deploy's second commit,
+`data/friday-2.diff`: on `c003`'s
 first turn, which block carries the automatic breakpoint, and did any earlier
 request write an entry that ends at the handbook? Then write
 `place_breakpoint()`, run `app.py`, and watch `c003`'s first turn read the
@@ -183,7 +196,8 @@ entry had expired (Keep going, TTL).
 LAB_SOLUTION=reference .venv/bin/python -m pytest -q tests   # the finished version passes
 ```
 
-Before you write anything: 8 failed (the clue tests), 64 passed, 1 skipped.
+Before you write anything: 8 failed (7 clue tests and the weekend replay),
+64 passed, 1 skipped.
 When you're done: 72 passed, 1 skipped (the live test). A copy without
 `reference.py` skips 3 more. `tests/test_offline.py` checks each clue with
 `checks.py`, then replays the weekend: Friday's code must stay near 0%, and
@@ -210,23 +224,51 @@ unless `LAB_LIVE=1`.
 
 ## Keep going
 
+Each exercise starts from your clue 4 solution. Save it first
+(`cp starter.py solved.py`), and copy it back over `starter.py` before the
+next exercise. Tool ordering and minimum length break the fix on purpose, so
+the readout says **Not yet** during them; TTL still says **Case closed**.
+
 **TTL.** After the fix, 50 first turns still miss, each after more than 5
-quiet minutes (the readout shows them). Nothing changed: the 5-minute entry
+quiet minutes: the diagnostics table shows 202 of 252 first turns reading
+the cache, and `c002`'s first turn, after 21 quiet minutes, is one of the 50.
+Nothing changed: the 5-minute entry
 expired. (On a follow-up turn, no diagnostics reason plus a zero
 `cache_read_input_tokens` means the same.) Try
 `{"type": "ephemeral", "ttl": "1h"}` on the system breakpoint. A 1-hour
 write costs 2x base input ($8 / MTok) instead of 1.25x, and 1-hour entries
-must come before 5-minute ones. Update `meter()` to price
-`usage.cache_creation.ephemeral_1h_input_tokens` at `prices["cache_write_1h"]`
-(`usage.cache_creation` can be `None` too). On this traffic: about 98% hit
+must come before 5-minute ones. Update `meter()` to price the 1-hour writes,
+`usage.cache_creation.ephemeral_1h_input_tokens`, at `prices["cache_write_1h"]`
+(`usage.cache_creation` can be `None` too). `cache_creation_input_tokens`
+already includes them, so price only the rest at `"cache_write_5m"`, then
+rerun `-k clue_1`: it fails if a token is priced twice. On this traffic: about 98% hit
 rate, $0.0249 per conversation. Only 9,944 tokens are 1-hour writes, so the
 meter update shows mostly in the Weekend bill row: $6.23 before, $6.26 after.
 
 **Tool ordering.** Tools come first in the prefix, so any change to the
 tool definitions invalidates the tools, system, and messages caches. In your
-`build_request()`, add two tool definitions and shuffle them on each request
-with `random.sample(tools, 2)`. Offline, diagnostics reports `tools_changed`
-on about 200 requests and the hit rate falls to about 76%. Some of those
+`build_request()`, add two tool definitions and send them in a random order
+on each request:
+
+```python
+import random
+
+TOOLS = [
+    {"name": "track_order", "description": "Look up an order's status and tracking number.",
+     "input_schema": {"type": "object", "properties": {"order_number": {"type": "string"}},
+                      "required": ["order_number"]}},
+    {"name": "check_stock", "description": "Check whether an item is in stock at a store.",
+     "input_schema": {"type": "object", "properties": {"sku": {"type": "string"}},
+                      "required": ["sku"]}},
+]
+
+# In build_request(), after make_request():
+request["tools"] = random.sample(TOOLS, 2)
+```
+
+Offline, diagnostics reports `tools_changed` on 190 to 230 follow-up turns
+and the hit rate falls to 75 to 79%. The order is random, so each run
+differs. Some of those
 rows still read the cache: two tools have only two orders, and diagnostics
 compares a request with the conversation's previous one, while the cache holds
 what every request in the workspace wrote. The fix is a fixed order and
@@ -241,7 +283,10 @@ past 512 (turn 3 in `c001`, turn 2 in only 4 conversations).
 Watch the `uncached` column: offline it's 0 everywhere else, because
 automatic caching puts a breakpoint on the last block and the simulator counts
 `input_tokens` only after the last breakpoint (How offline mode works; live,
-it's 4). Here it fills.
+it's 4). Here it fills. The hit rate falls to about 9%, but $ per
+conversation drops to about $0.025, below the fix's $0.029: each request
+sends 292 tokens of system prompt instead of the whole 4,972-token handbook.
+Cheaper, and Wren no longer has most of the handbook to answer from.
 
 ## Take it to your app
 
@@ -342,10 +387,12 @@ the room read out their four Clue lines.
 **Where people get stuck.**
 
 1. **Clue 4: why can't a first turn read the handbook?** It was the novice's
-   longest clue (12 minutes, docs included). The median restored the diff's
-   deleted breakpoint in about 4 minutes and got "Case closed" before the
-   rule landed, from the docs afterward; the strong learner did the same in
-   3. Have the room predict before anyone opens the diff: draw two first
+   longest clue (12 minutes, docs included). The median restored the
+   breakpoint the deploy deleted in about 4 minutes and got "Case closed"
+   before the rule landed, from the docs afterward; the strong learner did
+   the same in 3. (That was before the deploy was split into two commits;
+   `friday-2.diff` now waits for clue 4.) Have the room predict before
+   anyone opens `friday-2.diff`: draw two first
    turns side by side and ask which block the automatic breakpoint lands on
    and what any earlier request wrote. Then point at `c003`'s first turn (0
    read before the fix, 4,972 after), and say that `c002` still misses
@@ -454,7 +501,7 @@ offline.py        ← simulated Claude API client for offline mode
 clients.py        ← picks the client for config.PROVIDER
 config.py         ← provider, model ID, prices, the tests' bar
 
-data/             ← handbook.md (the system prompt), weekend.json (the traffic), friday.diff (the deploy), make_traffic.py
+data/             ← handbook.md (the system prompt), weekend.json (the traffic), friday-1.diff and friday-2.diff (the deploy's two commits), make_traffic.py
 tests/            ← test_offline.py (your code), test_simulator.py (the offline client), test_live.py (LAB_LIVE=1)
 scripts/setup.sh  ← one-command setup
 ```

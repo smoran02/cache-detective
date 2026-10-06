@@ -1,0 +1,20 @@
+commit 9b31e07d4c2a58f16e0d3b7c2a1f5e8d40c69b12
+Author: Wren team <wren-dev@kestrel.example>
+Date:   Fri Sep 25 16:41:27 2026 -0700
+
+    Tell Wren the time
+
+    Wren kept offering phone callbacks at 2am, when the phone line is
+    closed. Put the current time at the top of the system prompt.
+
+diff --git a/wren/requests.py b/wren/requests.py
+index 3f1c9e2..6d20a4f 100644
+--- a/wren/requests.py
++++ b/wren/requests.py
+@@ -31,4 +31,5 @@ def make_request(system, messages: list) -> dict:
+
+ def build_request(history: list, question: str, now: str) -> dict:
+     """One customer message: the handbook, the conversation so far, the new message."""
+-    return make_request(HANDBOOK, history + [{"role": "user", "content": question}])
++    system = f"Current time: {now}\n\n{HANDBOOK}"
++    return make_request(system, history + [{"role": "user", "content": question}])

@@ -34,7 +34,7 @@ def make_request(system, messages: list) -> dict:
 
 
 def friday_request(history: list, question: str, now: str) -> dict:
-    """One turn's request as Friday's deploy left it. The deploy is data/friday.diff."""
+    """One turn's request as Friday's deploy left it. The deploy is data/friday-1.diff and data/friday-2.diff."""
     system = f"Current time: {now}\n\n{HANDBOOK}"
     return make_request(system, history + [{"role": "user", "content": question}])
 

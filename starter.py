@@ -17,8 +17,11 @@ from support import HANDBOOK, make_request
 #             all input = input_tokens + cache_creation_input_tokens + cache_read_input_tokens
 #             (0.0 if there's no input at all)
 #   dollars:  the total across all the usages: each token count times its
-#             price in prices. Price cache writes at "cache_write_5m", and
-#             output_tokens at "output". app.py divides per conversation.
+#             price in prices. The keys: input_tokens at "input",
+#             cache_creation_input_tokens at "cache_write_5m",
+#             cache_read_input_tokens at "cache_read", and output_tokens at
+#             "output". ("cache_write_1h" is for Keep going, TTL.)
+#             app.py divides per conversation.
 # The two cache fields can be None. Count None as 0.
 # prices defaults to config.PRICES (Opus 5.5). cache_check.py, the file you take
 # to your app, runs this meter on your model's (README, "Take it to your app").

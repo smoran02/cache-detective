@@ -1,29 +1,17 @@
 """
 Lab settings. Change the provider here (or set LAB_PROVIDER); nothing else in
-the repo hardcodes a provider, model ID, region, or price.
+the repo hardcodes a provider, model ID, or price.
 """
 import os
 
 # offline:   the simulated client in offline.py. No key, no network, no cost.
 # anthropic: the Claude API. Needs ANTHROPIC_API_KEY.
-# bedrock:   Claude in Amazon Bedrock. Needs AWS credentials and Bedrock model access.
 PROVIDER = os.environ.get("LAB_PROVIDER", "offline")
+if PROVIDER not in ("offline", "anthropic"):
+    raise ValueError(f"PROVIDER must be offline or anthropic, not {PROVIDER!r}")
 
-# Model IDs per provider. Opus 5.5 on Bedrock has its own ID.
 # https://platform.claude.com/docs/en/models/opus-5-5/whats-new-opus-5-5#availability
-MODELS = {
-    "offline": "claude-opus-5-5",
-    "anthropic": "claude-opus-5-5",
-    "bedrock": "anthropic.claude-opus-5-5",
-}
-if PROVIDER not in MODELS:
-    raise ValueError(f"PROVIDER must be offline, anthropic, or bedrock, not {PROVIDER!r}")
-MODEL = MODELS[PROVIDER]
-
-# Bedrock region: AWS_REGION, then AWS_DEFAULT_REGION (the two the SDK reads),
-# then us-east-1, one of the regions that serves Opus 5.5.
-# https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock#regions
-AWS_REGION = os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
+MODEL = "claude-opus-5-5"
 
 # Room for adaptive thinking plus a short support reply. Thinking tokens bill as output
 # and count toward max_tokens: https://platform.claude.com/docs/en/build-with-claude/thinking
@@ -36,7 +24,6 @@ MIN_CACHEABLE_TOKENS = 512
 
 # Claude API list prices for Opus 5.5, in dollars per token ($/MTok divided by 1M).
 # https://platform.claude.com/docs/en/about-claude/pricing
-# Bedrock is billed by AWS at its own rates, so on Bedrock these are an estimate.
 PRICES = {
     "input": 4.00 / 1_000_000,           # base input: tokens after the last breakpoint
     "cache_write_5m": 5.00 / 1_000_000,  # 1.25x base

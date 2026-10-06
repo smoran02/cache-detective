@@ -2,7 +2,7 @@
 cache_check.py: cache hit rate, cost, and miss reasons for your own Claude app.
 Copy this one file into your app (it needs only the anthropic SDK) and set PRICES to your model's.
 
-    check = CacheCheck(client, log="usage.jsonl")      # diagnostics=False on Bedrock
+    check = CacheCheck(client, log="usage.jsonl")      # diagnostics=False off the Claude API
     response = check.create(conversation_id, model=..., max_tokens=..., system=..., messages=...)
     print(check.report())
     python cache_check.py usage.jsonl                   # the same report from the log
@@ -25,7 +25,7 @@ from collections import Counter
 from anthropic.types import Usage
 
 # $ per token for your model: set these to yours. Opus 5.5's Claude API list prices
-# (https://platform.claude.com/docs/en/about-claude/pricing); Bedrock bills at AWS rates.
+# (https://platform.claude.com/docs/en/about-claude/pricing).
 PRICES = {
     "input": 4.00 / 1_000_000, "cache_write_5m": 5.00 / 1_000_000, "cache_write_1h": 8.00 / 1_000_000,
     "cache_read": 0.20 / 1_000_000, "output": 20.00 / 1_000_000,
@@ -37,7 +37,7 @@ def meter(usages, prices: dict) -> tuple[float, float]:
     read = total = 0
     dollars = 0.0
     for u in usages:
-        # None counts as 0. (Unconfirmed: the usage field names on Bedrock. This reads the Claude API's.)
+        # None counts as 0.
         r, w = u.cache_read_input_tokens or 0, u.cache_creation_input_tokens or 0
         w_1h = u.cache_creation.ephemeral_1h_input_tokens if u.cache_creation else 0  # 1-hour writes cost more
         read, total = read + r, total + r + w + u.input_tokens
@@ -105,7 +105,6 @@ class CacheCheck:
     def create(self, conversation, **request):
         """client.beta.messages.create(**request) with diagnostics on, recorded under conversation (any id)."""
         if not self.diagnostics:
-            # Whether Bedrock rejects or ignores a diagnostics object is unconfirmed, so send none.
             return self.record(conversation, request, self.client.messages.create(**request))
         diagnostics = {"previous_message_id": self.last_id.get(conversation)}  # None on a first turn
         return self.record(conversation, request, self.client.beta.messages.create(**request, diagnostics=diagnostics))

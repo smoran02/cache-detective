@@ -323,7 +323,7 @@ def test_cache_check_reports_what_the_readout_does(capsys, monkeypatch, tmp_path
     def fixed(history, question, now):
         return reference.place_breakpoint(reference.build_request(history, question, now))
 
-    # On the Claude API it names diagnostics' reason; on Bedrock (diagnostics=False), the part that changed.
+    # With diagnostics it names diagnostics' reason; with diagnostics=False, the part that changed.
     follow_ups = requests - len(WEEKEND)
     for diagnostics, friday in ((True, "system_changed"), (False, "system")):
         assert through_cache_check(fixed, diagnostics).report() == readouts

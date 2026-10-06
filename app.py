@@ -21,7 +21,7 @@ from datetime import datetime
 import config
 from checks import (clue_1_problem, clue_2_problem, clue_2_replay_problem, clue_3_problem, clue_4_problem,
                     pending, reason_kind, shortfalls)
-from clients import has_diagnostics, make_client
+from clients import make_client
 from support import HANDBOOK, WEEKEND, friday_request, make_request, replay, send_plain
 
 CLUES = [
@@ -52,7 +52,7 @@ class Lab:
             return request
 
     def send(self, client, request, previous_id):
-        if "send_with_diagnostics" in self.offline or not has_diagnostics():
+        if "send_with_diagnostics" in self.offline:
             return send_plain(client, request, previous_id)
         try:
             return self.solution.send_with_diagnostics(client, request, previous_id)
@@ -192,7 +192,7 @@ def main():
     opening = conversations[0]["turns"][0]
     print(f'Wren\'s first customer, {conversations[0]["id"]} at {opening["at"][11:16]}: "{opening["text"]}"')
     print()
-    diagnosed = has_diagnostics() and "send_with_diagnostics" not in lab.offline
+    diagnosed = "send_with_diagnostics" not in lab.offline
     print_requests(yours, args.requests, diagnosed, live)
 
     n = len(conversations)
@@ -218,14 +218,11 @@ def main():
     print(f"  Your code's input tokens: {tokens(read)} read from cache, {tokens(written)} written to cache,"
           f" {tokens(sum(t.usage.input_tokens for t in yours))} uncached."
           f" Output: {tokens(sum(t.usage.output_tokens for t in yours))}.")
-    aws = " (Bedrock bills at AWS rates)" if config.PROVIDER == "bedrock" else ""
-    print(f"  Prices: Claude API list prices in config.PRICES{aws}.")
+    print("  Prices: Claude API list prices in config.PRICES.")
     print()
 
     for i, (name, what) in enumerate(CLUES, 1):
-        if name == "send_with_diagnostics" and not has_diagnostics():
-            status = "Claude API only: cache diagnostics isn't available on Bedrock"
-        elif name in lab.offline:
+        if name in lab.offline:
             status = f"offline: write {name}() in starter.py"
             if name == "build_request":
                 status += " (until then, your code sends Friday's request)"

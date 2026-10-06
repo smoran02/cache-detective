@@ -381,7 +381,7 @@ def test_output_stops_at_max_tokens():
 
 
 def test_first_divergence_agrees_with_diagnostics():
-    # first_divergence(), which cache_check.py uses on Bedrock (README, "Take it to your app"), names the part
+    # first_divergence(), which cache_check.py uses with diagnostics=False (README, "Take it to your app"), names the part
     # diagnostics names: the system prompt on Friday's code, nothing once the time moves.
     history = [{"role": "user", "content": "Do you rent bear canisters?"}, {"role": "assistant", "content": "Yes."}]
     turn_1 = friday_request([], history[0]["content"], "2026-09-26T09:00:00-07:00")

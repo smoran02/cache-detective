@@ -25,7 +25,7 @@ import config
 from offline import REPLIES
 from support import DATA, HANDBOOK, WEEKEND
 
-MODEL = config.MODELS["anthropic"]
+MODEL = config.MODEL
 # Each text is counted after this anchor, and the anchor's own count is subtracted.
 # That removes the request's fixed overhead and lets a whitespace-only line be counted.
 ANCHOR = "Count:\n"

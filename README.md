@@ -251,7 +251,7 @@ the meter and witness from clues 1 and 2, carrying each conversation's
 through it:
 
 ```python
-check = CacheCheck(client, log="usage.jsonl")    # diagnostics=False on Bedrock
+check = CacheCheck(client, log="usage.jsonl")    # diagnostics=False off the Claude API
 response = check.create(conversation_id, model=..., max_tokens=..., system=..., messages=...)
 print(check.report())    # requests, hit rate, total cost, miss reasons by type
 ```
@@ -267,12 +267,9 @@ weekend bill for your code:
 Diagnostics never blocks or fails a request, and it keeps only hashes and
 token-count estimates, not your prompts
 ([data retention](https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#data-retention)).
-It's Claude API only, so on Bedrock `CacheCheck` names the first part of each
-request that changed from the conversation's last one instead (`"system"`,
-`"params"`, `"messages[3]"`). For Bedrock's usage field names, the Claude docs
-send you to
-[AWS's prompt caching page](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html),
-which documents only the Converse API's.
+It's Claude API only. With `diagnostics=False`, `CacheCheck` names the first
+part of each request that changed from the conversation's last one instead
+(`"system"`, `"params"`, `"messages[3]"`).
 
 ## Run it live (optional, billed)
 
@@ -287,30 +284,11 @@ Each takes about 3 minutes and shows a request count as it goes. Live,
 "Case closed" needs a 70% hit rate and a lower bill than
 Friday's.
 
-**Claude API**
-
 ```bash
 export ANTHROPIC_API_KEY=...
 LAB_PROVIDER=anthropic .venv/bin/python app.py
 LAB_LIVE=1 LAB_PROVIDER=anthropic .venv/bin/python -m pytest -q -s tests/test_live.py
 ```
-
-**Amazon Bedrock**
-
-```bash
-export AWS_REGION=us-east-1     # or AWS_DEFAULT_REGION, or edit AWS_REGION in config.py
-LAB_PROVIDER=bedrock .venv/bin/python app.py
-LAB_LIVE=1 LAB_PROVIDER=bedrock .venv/bin/python -m pytest -q -s tests/test_live.py
-```
-
-| | Claude API | Claude in Amazon Bedrock |
-|---|---|---|
-| Client | `anthropic.Anthropic()` | `anthropic.AnthropicBedrockMantle(aws_region=...)` |
-| Auth | `ANTHROPIC_API_KEY` | AWS credentials (env vars, profile, SSO, or role), plus model access in the Bedrock console |
-| Model ID | `claude-opus-5-5` | `anthropic.claude-opus-5-5` |
-| Prompt caching | yes, automatic and explicit | yes, automatic and explicit; AWS also lists best-effort implicit caching |
-| Cache diagnostics | yes | not available: clue 2 is skipped |
-| Billing | Claude API prices (`config.PRICES`) | AWS rates, so the readout's dollars are an estimate |
 
 **First live run** (Claude API, 09/29/26, `reference.py`, 17 requests per
 version):
@@ -327,7 +305,7 @@ the lab's text with the real tokenizer's counts, and its simulated replies
 average the 392 output tokens this run did. Every follow-up turn reported no
 change in cache diagnostics, and `uncached` was 4 on every request. `tests/test_live.py`
 passed at 97.2%, likely because its first request read the handbook `app.py`
-had cached minutes earlier. Bedrock hasn't been run yet.
+had cached minutes earlier.
 
 ## Teaching this
 
@@ -386,13 +364,8 @@ Tool ordering), debrief 5. If clue 4 hasn't landed by minute 30, draw the two
 first turns, have everyone copy `place_breakpoint()` from `reference.py`, and
 make Keep going a 3-minute demo of the TTL step. **Debrief:** keep the prefix
 byte-stable, put a breakpoint at the end of what requests share, and prove it
-with the usage split (and diagnostics, on the Claude API). Then walk through
+with the usage split and diagnostics. Then walk through
 Talking to customers.
-
-**On Bedrock,** clue 2 is skipped (no cache diagnostics), and AWS's
-best-effort implicit caching may hide clue 4's first-turn miss; the lab
-hasn't been run there yet. Check Opus 5.5 model access in the Bedrock console
-before the session. The readout's dollars are Claude API prices.
 
 **Rate limits.** Teach the room offline: no key, no limits. Run live as a
 presenter demo (34 requests per `app.py` run, 34 more for the live test).
@@ -404,8 +377,8 @@ switch to offline and show your own earlier live numbers.
 - **"Our bill went up and we didn't change the model."** Ask for the `usage`
   of one follow-up request. High `cache_creation_input_tokens` with 0
   `cache_read_input_tokens` usually means something before the breakpoint
-  changes on every request (or the turns are more than 5 minutes apart). On
-  the Claude API, turn on `diagnostics` for one conversation and read
+  changes on every request (or the turns are more than 5 minutes apart).
+  Turn on `diagnostics` for one conversation and read
   `cache_miss_reason.type`: it names what changed. It keeps only hashes and
   token-count estimates, is ZDR eligible with qualifications
   ([data retention](https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics#data-retention)),
@@ -413,17 +386,6 @@ switch to offline and show your own earlier live numbers.
   turns always write the whole system prompt and never read, nothing marks
   the end of what requests share, because automatic caching alone lands on
   the new message. Diagnostics can't name that one; the usage split can.
-- **On Bedrock,** the docs list the same breakpoints (automatic and explicit,
-  up to 4, 5-minute and 1-hour TTLs; AWS's table gives Opus 5.5 a 512-token
-  minimum), but no cache diagnostics, a cache isolated per organization
-  rather than per workspace, and AWS's own rates. AWS also lists best-effort
-  implicit caching for Anthropic models, so clue 4's first-turn miss may not
-  show up there (this lab hasn't been run on Bedrock yet). To find the
-  culprit, run `first_divergence()` from `cache_check.py` on two consecutive
-  requests of one conversation: the first part whose hash differs (the tools,
-  the system prompt, a cache-busting parameter, or a message) is the change,
-  and if none differs, the entry may have expired. They can send you the
-  hashes (`fingerprint()`) instead of the prompts.
 - **Price the fix at their volume.** On Opus 5.5, cache reads cost 0.05x base
   input, 5-minute writes 1.25x, and 1-hour writes 2x. In this lab (real
   token counts, simulated replies), 10,000 conversations cost $890 on
@@ -478,9 +440,6 @@ test:
 - **Prefix order and breakpoints**: tools, then system, then messages, and a
   change anywhere invalidates everything after it. Writes happen only at a
   breakpoint, so a varying last block needs an explicit breakpoint before it.
-- **Providers**: the same fix on the Claude API and on Bedrock, with a
-  different client, model ID, and feature set (built, not yet run on
-  Bedrock).
 
 ## Repo layout
 
@@ -493,7 +452,7 @@ cache_check.py    ← take it to your app: hit rate, cost, and miss reasons, fro
 support.py        ← Wren: handbook loader, Friday's request, the replay loop
 offline.py        ← simulated Claude API client for offline mode
 clients.py        ← picks the client for config.PROVIDER
-config.py         ← provider, model IDs, region, prices, the tests' bar
+config.py         ← provider, model ID, prices, the tests' bar
 
 data/             ← handbook.md (the system prompt), weekend.json (the traffic), friday.diff (the deploy), make_traffic.py
 tests/            ← test_offline.py (your code), test_simulator.py (the offline client), test_live.py (LAB_LIVE=1)

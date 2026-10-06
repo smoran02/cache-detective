@@ -285,8 +285,8 @@ def test_the_readout_shows_the_readmes_numbers(capsys, monkeypatch):
     # these, so update the README (and the numbers in config.py and offline.py) with them.
     reference = pytest.importorskip("reference")
     out = readout(monkeypatch, capsys, **{name: getattr(reference, name) for name in FUNCTIONS})
-    for number in ("0.0%", "$0.0539", "$0.0172 per conversation", "3.1x", "90.8%", "$0.0171",
-                   "3,098", "411 follow-up turns said system_changed, now 0", "on 0 of 252, now 202", "Case closed"):
+    for number in ("0.0%", "$0.0890", "$0.0299 per conversation", "3.0x", "90.7%", "$0.0293",
+                   "4,972", "411 follow-up turns said system_changed, now 0", "on 0 of 252, now 202", "Case closed"):
         assert number in out, f"the readout no longer shows {number}: update the README's checkpoint table"
 
 

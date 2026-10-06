@@ -51,15 +51,15 @@ LIVE_CONVERSATIONS = 6
 
 # The bar a fix must clear. tests/test_offline.py asserts it, and app.py prints
 # "Case closed" only when your numbers clear it. Offline it's calibrated to the
-# simulated weekend, where the reference gets a 90.8% hit rate and $0.0171 per
+# simulated weekend, where the reference gets a 90.7% hit rate and $0.0293 per
 # conversation (README, "How offline mode works"). The bounds leave room for
 # small differences, like how you word the time.
 BAR = {
     "hit_rate": 0.88,                    # at least
-    "dollars_per_conversation": 0.0190,  # at most
+    "dollars_per_conversation": 0.0325,  # at most
     # Friday's bill over yours, at least. Only the tests check it: on this traffic the
-    # dollars bar implies it ($0.0539 / $0.0190 is 2.84).
-    "friday_over_fixed": 2.8,
+    # dollars bar implies it ($0.0890 / $0.0325 is 2.74).
+    "friday_over_fixed": 2.7,
     "first_turns_reading": 0.75,         # share of first turns that read the cache, at least
     "follow_ups_past_handbook": 0.90,    # share of follow-up turns that read more than the handbook, at least
 }

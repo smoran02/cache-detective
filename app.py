@@ -175,13 +175,17 @@ def main():
     live = config.PROVIDER != "offline"
     conversations = WEEKEND[: config.LIVE_CONVERSATIONS] if live else WEEKEND
 
-    friday = replay(make_client(), conversations, friday_request, lab.send)
-    yours = replay(make_client(), conversations, lab.build, lab.send)
+    if live:
+        n = sum(len(c["turns"]) for c in conversations)
+        print(f"\nLive on {config.PROVIDER}: {n} billed requests through Friday's code, then {n} through yours,"
+              " one at a time. About 3 minutes.", file=sys.stderr)
+    friday = replay(make_client(), conversations, friday_request, lab.send, label="Friday's code" if live else None)
+    yours = replay(make_client(), conversations, lab.build, lab.send, label="Your code" if live else None)
     friday_meter, your_meter = lab.meter(friday), lab.meter(yours)
     # Offline only (live, it would be 17 more billed requests): the same weekend on Thursday's code.
     thursday_meter = None if live else lab.meter(replay(make_client(), conversations, thursday_request, send_plain))
 
-    mode = f"live on {config.PROVIDER} (real calls, billed)" if live else "offline (simulated tokens, no API calls)"
+    mode = f"live on {config.PROVIDER} (real calls, billed)" if live else "offline (simulated client, no API calls)"
     print()
     print(f"CACHE DETECTIVE  |  Kestrel Outdoor support chat, weekend of 09/26/26  |  {solution_name}.py")
     print(f"{mode}  |  {config.MODEL}  |  {len(conversations)} conversations, {len(yours)} requests")

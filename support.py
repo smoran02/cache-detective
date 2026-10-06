@@ -7,6 +7,8 @@ customer message is one Messages API request: the handbook as the system
 prompt, the conversation so far, and the new message.
 """
 import json
+import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -57,11 +59,13 @@ class Turn:
     reason: object  # what send() returned: a cache_miss_reason, "pending", or None
 
 
-def replay(client, conversations: list, build, send) -> list[Turn]:
+def replay(client, conversations: list, build, send, label: str | None = None) -> list[Turn]:
     """Replay conversations in time order, one request per customer message.
 
     build(history, question, now) returns the request dict for one turn.
     send(client, request, previous_id) returns (response, reason).
+    label, if given, shows progress on stderr: live runs send one billed request
+    at a time and take minutes.
     """
     events = sorted(
         (datetime.fromisoformat(t["at"]), c, n)
@@ -71,6 +75,9 @@ def replay(client, conversations: list, build, send) -> list[Turn]:
     history = [[] for _ in conversations]
     previous_id = [None] * len(conversations)
     turns = []
+    start = time.monotonic()
+    if label:
+        _progress(label, 0, len(events), 0)
     for when, c, n in events:
         convo, message = conversations[c], conversations[c]["turns"][n]
         if hasattr(client, "set_clock"):
@@ -90,9 +97,20 @@ def replay(client, conversations: list, build, send) -> list[Turn]:
         # the system prompt changed is a 400 on accounts created since 08/31/26:
         # Friday's system prompt changes on every request.
         # https://platform.claude.com/docs/en/build-with-claude/thinking#preserving-thinking-blocks
-        # (Unconfirmed: whether live diagnostics would flag a reply sent back
-        # without its thinking block.)
+        # The first live run (09/29/26) showed diagnostics doesn't flag a reply sent
+        # back without its thinking block: all 11 follow-up turns reported no change.
         history[c] = request["messages"] + [{"role": "assistant", "content": reply_text(response)}]
         previous_id[c] = response.id
         turns.append(Turn(convo["id"], n + 1, message["at"], response.usage, reason))
+        if label:
+            _progress(label, len(turns), len(events), time.monotonic() - start)
     return turns
+
+
+def _progress(label: str, done: int, total: int, seconds: float):
+    """One status line per replay: rewritten in place on a terminal, printed once when piped."""
+    line = f"  {label}: {done} of {total} requests, {seconds:.0f}s"
+    if sys.stderr.isatty():
+        print(f"\r{line}", end="\n" if done == total else "", file=sys.stderr, flush=True)
+    elif done == total:
+        print(line, file=sys.stderr, flush=True)

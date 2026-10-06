@@ -35,15 +35,16 @@ a string or a list of blocks, a text block whose text isn't a string, and a
 user message or isn't followed by an assistant message (or the end).
 https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages
 
-What it doesn't do: count tokens like the real tokenizer (it uses about 4
-characters per token, so every count here is simulated), call tools, write
-real replies, model concurrent requests, or expire diagnostics fingerprints
-(the docs say they last "a short period"; here they last the whole run).
-Replies are canned text, and their lengths vary with the request.
-Unconfirmed simplification: input_tokens counts only the tokens after the
-last breakpoint, so when the last block is a breakpoint it's 0 here. The docs
+Token counts are real for the lab's own text (data/token_counts.json, from
+the token counting endpoint) and estimated for anything else (count_tokens).
+What it doesn't do: call tools, write real replies, model concurrent
+requests, or expire diagnostics fingerprints (the docs say they last "a short
+period"; here they last the whole run). Replies are canned text, picked by
+the message, with simulated thinking tokens.
+Simplification: input_tokens counts only the tokens after the last
+breakpoint, so when the last block is a breakpoint it's 0 here. The docs
 define it that way, but the example response on the cache diagnostics page
-shows 42. The first live run will show the real count.
+shows 42, and the first live run (09/29/26) returned 4 on every request.
 
 tests/test_simulator.py has a test for each rule above and for each
 Unconfirmed reading below.
@@ -54,6 +55,7 @@ import json
 import math
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 
 from anthropic.types import Message
 from anthropic.types.beta import BetaMessage
@@ -70,8 +72,8 @@ MAX_BREAKPOINTS = 4
 # refresh!)", and their mixed-TTL billing names A as "the highest cache hit",
 # which implies one request can hit at more than one breakpoint. The sim
 # reads it that way. The lab's numbers rest on it: set this to False and the
-# fix gets 84.4% and $0.0197, Thursday 84.3% and $0.0199, so Friday is 2.7x
-# Thursday instead of 3.1x, and the reference fails 3 offline tests (README,
+# fix gets 84.3% and $0.0335, Thursday 84.1% and $0.0344, so Friday is 2.6x
+# Thursday instead of 3.0x, and the reference fails 3 offline tests (README,
 # "How offline mode works").
 REFRESH_BREAKPOINTS_INSIDE_THE_READ = True
 
@@ -83,21 +85,36 @@ REPLIES = [
     "Thanks for reaching out. I've pulled up the details, and here is where things stand: "
     "your request is within our policy, so there's nothing extra you need to do right now. "
     "You'll get an email confirmation shortly with the next steps and any tracking or case "
-    "number. If anything looks off when it arrives, reply to that email or message me here.",
-    "Good question. Our policy covers this: you have a few options, and the simplest is to "
-    "start it from your order page, which takes about two minutes. If you'd rather I set it "
-    "up for you, share the order number and I'll take care of it from here.",
+    "number. If you don't see it within an hour, check your spam folder, since confirmations "
+    "sometimes land there. If anything looks off when it arrives, like the wrong size, color, "
+    "or address, reply to that email or message me here and I'll fix it before anything ships.",
+    "Good question. Our policy covers this, and you have a few options. The simplest is to "
+    "start it from your order page: sign in, open the order, and pick the item, which takes "
+    "about two minutes. If the option you want isn't listed there, the order is usually still "
+    "being packed, and it will show up once it ships. If you'd rather I set it up for you, "
+    "share the order number and the email on the account, and I'll take care of it from here "
+    "and confirm by email when it's done.",
     "I can help with that. Based on what you've described, this is covered, and I've noted "
-    "it on your account. The timing depends on the carrier and our warehouse, but most "
-    "customers see it resolved within a few business days. I'll keep the case open until then.",
+    "it on your account so anyone on our team can see the history. The timing depends on the "
+    "carrier and our warehouse, but most customers see it resolved within a few business days. "
+    "You don't need to keep the packaging or send anything else unless we ask. I'll keep the "
+    "case open until it's settled, and you'll get an email at each step, so you won't have to "
+    "check back with us.",
     "Here's what I'd suggest. First, check the details on your order page so we're looking at "
-    "the same thing. Second, if it still doesn't match, I can open a case with our team, and "
-    "they'll follow up by email within one business day.",
+    "the same thing: the item, the size, and the shipping address. Second, if something still "
+    "doesn't match what you expected, I can open a case with our team, and they'll follow up by "
+    "email within one business day. A photo helps if the issue is with the item itself. In the "
+    "meantime, nothing on your order will change without your OK.",
     "Happy to help. That works, and there's no charge for it in your situation. Let me know "
-    "if you want me to go ahead, and I'll send a confirmation to the email on your account.",
+    "if you want me to go ahead, and I'll send a confirmation to the email on your account. "
+    "If you'd like to change anything else on the same order, tell me now and I'll do it all "
+    "together, so everything lands on one confirmation.",
     "Thanks for your patience. I've checked this against our policy and your order. The short "
-    "answer is yes, with one condition: we'll need the item back in its original condition. "
-    "I'll email you a prepaid label, and the rest happens automatically once it's scanned.",
+    "answer is yes, with one condition: we'll need the item back in its original condition, "
+    "with the tags attached if it still has them. I'll email you a prepaid label, and the rest "
+    "happens automatically once the carrier scans it. You'll see the update on your order page "
+    "within a day or two of the scan. If the label doesn't arrive in the next hour, message me "
+    "here and I'll resend it.",
 ]
 
 
@@ -107,9 +124,25 @@ class SimulatedAPIError(Exception):
     status_code = 400
 
 
+# Real counts for the lab's fixed text (the handbook's lines, the customer messages, and
+# REPLIES), from the token counting endpoint. scripts/count_tokens.py writes the file.
+_COUNTS_FILE = Path(__file__).parent / "data" / "token_counts.json"
+COUNTED = json.loads(_COUNTS_FILE.read_text())["tokens"] if _COUNTS_FILE.exists() else {}
+
+
 def count_tokens(text: str) -> int:
-    """Simulated token count: about 4 characters per token. The real tokenizer differs."""
-    return math.ceil(len(text) / 4)
+    """Token count: real for the lab's fixed text, estimated for anything else.
+
+    A text counted whole (a customer message, a reply) uses its real count. Otherwise
+    each line uses its real count if it has one (the handbook's lines, which also covers
+    a system prompt with the time added) and about 4 characters per token if it doesn't.
+    """
+    if text in COUNTED:
+        return COUNTED[text]
+    lines = text.splitlines(keepends=True)
+    if not any(line in COUNTED for line in lines):
+        return math.ceil(len(text) / 4)
+    return sum(COUNTED[line] if line in COUNTED else math.ceil(len(line) / 4) for line in lines)
 
 
 def _sha(text: str) -> str:
@@ -411,7 +444,9 @@ class _Engine:
         # and count toward max_tokens, and the block's text is empty at the
         # default display ("omitted").
         # https://platform.claude.com/docs/en/build-with-claude/thinking
-        thinking_tokens = min(40 + seed % 240, max_tokens)
+        # 20 to 509 tokens, about 264 on average: with REPLIES' 128, that's the first
+        # live run's 392 output tokens per request (09/29/26).
+        thinking_tokens = min(20 + seed % 490, max_tokens)
         room, stop = max_tokens - thinking_tokens, "end_turn"
         if count_tokens(text) > room:
             text, stop = text[: 4 * room], "max_tokens"
@@ -453,8 +488,9 @@ class _Engine:
         # model first, then follows the prefix order: tools, system, messages.
         # cache_missed_input_tokens is estimated per block here, not from byte
         # lengths as the API does; like the real field, treat it as a magnitude.
-        # Unconfirmed: whether the API compares against the previous request only
-        # (as here) or also against its response content.
+        # The docs don't say whether the API also compares against the previous
+        # response's content. The first live run (09/29/26), which sends back reply
+        # text without thinking blocks, reported no change on every follow-up turn.
         if fp["model"] != prev["model"]:
             return _changed("model_changed", fp["total"])
         if fp["tools"] != prev["tools"]:

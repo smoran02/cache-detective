@@ -33,8 +33,9 @@ def test_live_weekend_before_and_after_the_fix():
     def fixed_request(history, question, now):
         return solution.place_breakpoint(solution.build_request(history, question, now))
 
-    friday = replay(client, conversations, friday_request, send)
-    fixed = replay(client, conversations, fixed_request, send)
+    print(f"\nLive: {2 * sum(len(c['turns']) for c in conversations)} billed requests, one at a time.", flush=True)
+    friday = replay(client, conversations, friday_request, send, label="Friday")
+    fixed = replay(client, conversations, fixed_request, send, label="Fixed")
 
     # The test's own meter, as offline, so a bug in meter() can't hide a bad fix.
     friday_hit, friday_dollars = truth(t.usage for t in friday)
@@ -48,8 +49,8 @@ def test_live_weekend_before_and_after_the_fix():
     print(f"Friday: hit rate {friday_hit:.1%}, ${friday_dollars / n:.4f} per conversation")
     print(f"Fixed:  hit rate {fixed_hit:.1%}, ${fixed_dollars / n:.4f} per conversation")
     if has_diagnostics():
-        # Unconfirmed (support.py, replay): whether reply text sent back without its thinking block
-        # shows up as messages_changed. None means no change; "pending" means check the next turn.
+        # Reply text goes back without its thinking block (support.py, replay). The first live run
+        # (09/29/26) showed None on every follow-up turn: no change. "pending" means check the next turn.
         reasons = Counter(getattr(t.reason, "type", t.reason) for t in fixed if t.number > 1)
         print(f"Fixed, follow-up turns' cache_miss_reason: {dict(reasons)}")
 

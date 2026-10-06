@@ -50,7 +50,7 @@ You need Python **3.10+** and no API key. (macOS's built-in `python3` is
 `PYTHON=python3.12 ./scripts/setup.sh`.)
 
 ```bash
-git clone [confirm: lab repo URL] cache-detective && cd cache-detective
+git clone https://github.com/smoran02/cache-detective && cd cache-detective
 ./scripts/setup.sh              # creates .venv and installs requirements
 .venv/bin/python app.py         # the weekend readout, offline
 ```
@@ -97,8 +97,8 @@ input, and they don't overlap:
 
 All input is the sum of the three: `input_tokens` alone is not the total.
 `starter.py` has the exact contract. Run `app.py`: Friday's code has a
-**0.0%** hit rate at **$0.0539** per conversation, and the line under the
-table shows Thursday's code, before the deploy, at **$0.0172**. The bill
+**0.0%** hit rate at **$0.0890** per conversation, and the line under the
+table shows Thursday's code, before the deploy, at **$0.0299**. The bill
 tripled. Every request writes the whole
 prompt to the cache at 1.25x the input price, and nothing ever reads it back.
 
@@ -111,7 +111,7 @@ conversation's first turn). The API needs no beta header, but the Python SDK
 (1.8) takes `diagnostics` only on its beta methods, like
 `client.beta.messages.create`. `response.diagnostics` comes back in one of
 three documented states, and `starter.py` says what to return for each. Run
-`app.py`: every follow-up turn says **`system_changed`**, with about 3,200
+`app.py`: every follow-up turn says **`system_changed`**, with about 5,200
 tokens missed.
 Friday's deploy is in `data/friday.diff`, from Wren's repo; the lab's copy of
 the deployed code is `friday_request()` in `support.py`. What in the system
@@ -157,7 +157,7 @@ first turn, which block carries the automatic breakpoint, and did any earlier
 request write an entry that ends at the handbook? Then write
 `place_breakpoint()`, run `app.py`, and watch `c003`'s first turn read the
 handbook. When your code clears the tests' bar, the readout says **Case
-closed**: about **91%** and **$0.017** per conversation offline (live, the bar
+closed**: about **91%** and **$0.029** per conversation offline (live, the bar
 is 70%), a third of Friday's and where Thursday's code was, with the time
 still in.
 
@@ -187,7 +187,7 @@ Before you write anything: 8 failed (the clue tests), 64 passed, 1 skipped.
 When you're done: 72 passed, 1 skipped (the live test). A copy without
 `reference.py` skips 3 more. `tests/test_offline.py` checks each clue with
 `checks.py`, then replays the weekend: Friday's code must stay near 0%, and
-yours must clear `config.BAR` (at least 88% and at most $0.0190 per
+yours must clear `config.BAR` (at least 88% and at most $0.0325 per
 conversation), priced by the tests' own meter (`checks.truth()`) so a bug in
 `meter()` can't hide a bad fix. The readout runs the same checks and bar
 before it says "Case closed." The bar is calibrated to the simulator,
@@ -219,14 +219,14 @@ write costs 2x base input ($8 / MTok) instead of 1.25x, and 1-hour entries
 must come before 5-minute ones. Update `meter()` to price
 `usage.cache_creation.ephemeral_1h_input_tokens` at `prices["cache_write_1h"]`
 (`usage.cache_creation` can be `None` too). On this traffic: about 98% hit
-rate, $0.0143 per conversation. Only 6,196 tokens are 1-hour writes, so the
-meter update shows mostly in the Weekend bill row: $3.60 before, $3.62 after.
+rate, $0.0249 per conversation. Only 9,944 tokens are 1-hour writes, so the
+meter update shows mostly in the Weekend bill row: $6.23 before, $6.26 after.
 
 **Tool ordering.** Tools come first in the prefix, so any change to the
 tool definitions invalidates the tools, system, and messages caches. In your
 `build_request()`, add two tool definitions and shuffle them on each request
 with `random.sample(tools, 2)`. Offline, diagnostics reports `tools_changed`
-on about 200 requests and the hit rate falls to about 77%. Some of those
+on about 200 requests and the hit rate falls to about 76%. Some of those
 rows still read the cache: two tools have only two orders, and diagnostics
 compares a request with the conversation's previous one, while the cache holds
 what every request in the workspace wrote. The fix is a fixed order and
@@ -235,13 +235,13 @@ deterministic serialization. (The simulated client never calls tools.)
 **Minimum length.** Opus 5.5 caches a prefix only if it's at least 512
 tokens (`config.MIN_CACHEABLE_TOKENS`); some other models need 1,024 to
 4,096. Shorter prefixes run uncached with no error, and both cache fields
-come back 0. Try `HANDBOOK[:1500]` (375 simulated tokens) as the system
-prompt: first turns never cache, and caching starts once the conversation
-grows the prefix past 512 (turn 3 in `c001`, turn 2 in 10 conversations).
+come back 0. Try `HANDBOOK[:900]` (292 tokens) as the system prompt: first
+turns never cache, and caching starts once the conversation grows the prefix
+past 512 (turn 3 in `c001`, turn 2 in only 4 conversations).
 Watch the `uncached` column: offline it's 0 everywhere else, because
 automatic caching puts a breakpoint on the last block and the simulator counts
-`input_tokens` only after the last breakpoint (How offline mode works). Here
-it fills.
+`input_tokens` only after the last breakpoint (How offline mode works; live,
+it's 4). Here it fills.
 
 ## Take it to your app
 
@@ -276,12 +276,15 @@ which documents only the Converse API's.
 
 ## Run it live (optional, billed)
 
-Offline token counts are simulated (about 4 characters per token). For real
-ones, set `PROVIDER` in `config.py` or `LAB_PROVIDER`. Live runs replay the
+Offline, the lab's own text uses real token counts and the replies are
+simulated (How offline mode works). To send real requests, set `PROVIDER` in
+`config.py` or `LAB_PROVIDER`. Live runs replay the
 first 6 conversations (17 requests) through each version, back to back,
 stamped with the wall clock as Friday's deploy was, so Friday's prompts never
-repeat from one run to the next: about $0.50 at list prices, at simulated
-token counts. Live, "Case closed" needs a 70% hit rate and a lower bill than
+repeat from one run to the next. The first live run cost $0.77 at list
+prices, and the live test is a second run, so budget about $1.50 for both.
+Each takes about 3 minutes and shows a request count as it goes. Live,
+"Case closed" needs a 70% hit rate and a lower bill than
 Friday's.
 
 **Claude API**
@@ -309,7 +312,22 @@ LAB_LIVE=1 LAB_PROVIDER=bedrock .venv/bin/python -m pytest -q -s tests/test_live
 | Cache diagnostics | yes | not available: clue 2 is skipped |
 | Billing | Claude API prices (`config.PRICES`) | AWS rates, so the readout's dollars are an estimate |
 
-The live path is built but has not yet been run against either provider.
+**First live run** (Claude API, 09/29/26, `reference.py`, 17 requests per
+version):
+
+| | Friday's code | The fix |
+|---|---|---|
+| Cache hit rate | 0.0% | 91.7% |
+| $ per conversation | $0.0961 | $0.0310 |
+| Bill for the run | $0.58 | $0.19 (-68%) |
+
+Offline, the same 6 conversations sent back to back give Friday's code 0.0%
+and $0.0923 and the fix 92.1% and $0.0325, within 5% of live: offline counts
+the lab's text with the real tokenizer's counts, and its simulated replies
+average the 392 output tokens this run did. Every follow-up turn reported no
+change in cache diagnostics, and `uncached` was 4 on every request. `tests/test_live.py`
+passed at 97.2%, likely because its first request read the handbook `app.py`
+had cached minutes earlier. Bedrock hasn't been run yet.
 
 ## Teaching this
 
@@ -334,10 +352,10 @@ network, and macOS's built-in `python3` is too old.
 
 | After | Every screen shows |
 |---|---|
-| Clue 1 | 0.0% and $0.0539 in both columns; Thursday's $0.0172 under them (3.1x) |
-| Clue 2 | `system_changed` on all 411 follow-up turns, about 3,200 tokens missed |
-| Clue 3 | about 61% and $0.029; first turns read the cache 0 times out of 252 |
-| Clue 4 | about 91% and $0.017; `c003`'s first turn reads 3,098; "Case closed" |
+| Clue 1 | 0.0% and $0.0890 in both columns; Thursday's $0.0299 under them (3.0x) |
+| Clue 2 | `system_changed` on all 411 follow-up turns, about 5,200 tokens missed |
+| Clue 3 | about 61% and $0.048; first turns read the cache 0 times out of 252 |
+| Clue 4 | about 91% and $0.029; `c003`'s first turn reads 4,972; "Case closed" |
 
 The last digits shift a little with how each learner words the time, since
 simulated reply lengths follow the message text. To spot who's stuck, have
@@ -352,7 +370,7 @@ the room read out their four Clue lines.
    3. Have the room predict before anyone opens the diff: draw two first
    turns side by side and ask which block the automatic breakpoint lands on
    and what any earlier request wrote. Then point at `c003`'s first turn (0
-   read before the fix, 3,098 after), and say that `c002` still misses
+   read before the fix, 4,972 after), and say that `c002` still misses
    because 21 quiet minutes outlast the 5-minute TTL.
 2. **Clue 2: the three states of `response.diagnostics`.** The novice and the
    median each spent 10 minutes, both reading the diagnostics docs for the
@@ -407,9 +425,9 @@ switch to offline and show your own earlier live numbers.
   and if none differs, the entry may have expired. They can send you the
   hashes (`fingerprint()`) instead of the prompts.
 - **Price the fix at their volume.** On Opus 5.5, cache reads cost 0.05x base
-  input, 5-minute writes 1.25x, and 1-hour writes 2x. In this lab (simulated
-  token counts), 10,000 conversations cost $539 on Friday's code and $171
-  fixed. Cache reads also don't count toward the
+  input, 5-minute writes 1.25x, and 1-hour writes 2x. In this lab (real
+  token counts, simulated replies), 10,000 conversations cost $890 on
+  Friday's code and $293 fixed. Cache reads also don't count toward the
   [input-tokens-per-minute limit](https://platform.claude.com/docs/en/api/rate-limits)
   on most models, Opus 5.5 included; cache writes and uncached input do.
 
@@ -419,13 +437,19 @@ switch to offline and show your own earlier live numbers.
 [prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
 and [cache diagnostics](https://platform.claude.com/docs/en/build-with-claude/cache-diagnostics)
 rules its docstring lists; `tests/test_simulator.py` has a test for each. It
-returns the SDK's own `Message` and `BetaMessage` types. It doesn't count
-tokens like the real tokenizer, write real replies (their simulated lengths
-vary with the request), call tools, or expire diagnostics fingerprints (the
-docs say "a short period"). It counts `input_tokens` only after the last
+returns the SDK's own `Message` and `BetaMessage` types. Its token counts
+are real for the lab's own text: `data/token_counts.json` holds the
+[token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)
+endpoint's count for each handbook line, customer message, and canned reply
+(`scripts/count_tokens.py` writes it; counting is free but needs a key, so
+rerun it only if you edit that text). Anything else, like the time, is
+estimated at about 4 characters per token. It doesn't write real replies:
+it picks one of 6 canned ones by the message, with simulated thinking tokens
+sized to the first live run. It doesn't call tools or expire diagnostics
+fingerprints (the docs say "a short period"). It counts `input_tokens` only after the last
 breakpoint, so it's 0 whenever the last block carries one: that's the docs'
 definition, but the example response on the diagnostics page shows 42, and
-the first live run will show the real count. Where the docs are silent, it
+the first live run returned 4 on every request. Where the docs are silent, it
 picks a reading, marks it `Unconfirmed:` in the code, and pins it with a
 test:
 
@@ -434,12 +458,12 @@ test:
   block read again "a cache hit (and also a cache refresh!)", and their
   mixed-TTL billing counts from "the highest cache hit"). The lab's numbers
   rest on this. With `REFRESH_BREAKPOINTS_INSIDE_THE_READ = False` in
-  `offline.py`, the fix gets 84.4% and $0.0197, Friday's bill is 2.7x
-  Thursday's instead of 3.1x, and the reference fails 3 offline tests.
+  `offline.py`, the fix gets 84.3% and $0.0335, Friday's bill is 2.6x
+  Thursday's instead of 3.0x, and the reference fails 3 offline tests.
 - Diagnostics reports the model first, then tools, system, request
   parameters, and messages, and compares with the previous request, not its
-  response. (The first live run will show whether reply text sent back
-  without its thinking block counts.)
+  response. (The first live run showed that reply text sent back without its
+  thinking block doesn't count: every follow-up turn reported no change.)
 - With 4 explicit breakpoints, the last on the last block, the docs call
   automatic caching a no-op there and also say 4 explicit breakpoints are a
   400. The sim returns the 400.
@@ -478,4 +502,4 @@ scripts/setup.sh  ← one-command setup
 
 ## License
 
-`[confirm: license]`
+MIT. See `LICENSE`. Copy any of it into your own app.
